@@ -18,7 +18,7 @@ void HelpController::ShowControllers(const ControllerArguments& arguments, Contr
 
     OutputFormat outputFormat = OutputFormat::OF_Text;
     auto it = arguments.find("format");
-    if(it = arguments.end())
+    if(it == arguments.end())
     {
         const string formatText = it->second;
 
