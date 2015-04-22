@@ -9,7 +9,7 @@ CONTROLLER_REGISTERIMPL(DefaultController)
 
 void DefaultController::RegisterMethods()
 {
-    TRegisterMethod("Test", &DefaultController::Test);
+    TRegisterMethod("Test", "Action from test.", &DefaultController::Test);
 }
 
 void DefaultController::Test(const map<string, string>& arguments, string& content)

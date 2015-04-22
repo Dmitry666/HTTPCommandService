@@ -1,14 +1,20 @@
 #include "controller.h"
 #include <algorithm>
 
+using namespace std;
+
 namespace http {
 
-ControllerMethodRef IController::FindMethod(const std::string& name)
+string ToLower(const string& text)
 {
-    std::string nameLower = name;
-    std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(), ::tolower);
+    string textLower = text;
+    transform(textLower.begin(), textLower.end(), textLower.begin(), ::tolower);
+    return textLower;
+}
 
-    auto it = _methods.find(nameLower);
+ControllerMethodRef IController::FindMethod(const string& name)
+{
+    auto it = _methods.find(ToLower(name));
     if(it != _methods.end())
     {
         return it->second;
@@ -17,35 +23,26 @@ ControllerMethodRef IController::FindMethod(const std::string& name)
     return nullptr;
 }
 
-void IController::RegisterMethod(const std::string& name, ControllerMethodRef method)
+void IController::RegisterMethod(ControllerMethodRef method)
 {
-    std::string nameLower = name;
-    std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(), ::tolower);
-
-    _methods.insert(std::make_pair(nameLower, method));
+    _methods.insert(make_pair(ToLower(method->GetName()), method));
 }
 
 
 
 //
-std::map<std::string, IController*> ControllerManager::_controllers
+map<string, IController*> ControllerManager::_controllers
 __attribute__ ((init_priority (101)));
 
 void ControllerManager::RegisterController(IController* controller)
 {
-    std::string nameLower = controller->ClassName();
-    std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(), ::tolower);
-
-    _controllers.insert(std::make_pair(nameLower, controller));
+    _controllers.insert(make_pair(ToLower(controller->ClassName()), controller));
     controller->RegisterMethods();
 }
 
-IController* ControllerManager::FindController(const std::string& name)
+IController* ControllerManager::FindController(const string& name)
 {
-    std::string nameLower = name;
-    std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(), ::tolower);
-
-    auto it = _controllers.find(nameLower);
+    auto it = _controllers.find(ToLower(name));
     if(it != _controllers.end())
     {
         return it->second;
@@ -57,4 +54,4 @@ IController* ControllerManager::FindController(const std::string& name)
 //ControllerManager& ControllerManager::Instance()
 //{}
 
-}
+} // End http.

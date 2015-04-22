@@ -27,7 +27,8 @@ HEADERS += \
     controller.h \
     common.h \
     defaultcontroller.h \
-    delegate.h
+    delegate.h \
+    helpcontroller.h
 
 SOURCES += \
     connection.cpp \
@@ -39,7 +40,8 @@ SOURCES += \
     request_parser.cpp \
     server.cpp \
     controller.cpp \
-    defaultcontroller.cpp
+    defaultcontroller.cpp \
+    helpcontroller.cpp
 
 
 win32 {
