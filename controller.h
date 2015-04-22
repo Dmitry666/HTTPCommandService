@@ -28,14 +28,34 @@ private:
 #define FACTORY_REGISTERIMPL(classname, collection) \
     const TControllerRegistrar<classname, ControllerManager> classname::creator##classname;
 
+
+/*
+class ControllerMethod
+{
+public:
+    ControllerMethod();
+
+protected:
+    std::string _name;
+};
+*/
+
 /**
  * @brief Controller interface.
  */
 class IController
 {
+    typedef std::function<void(const IController&)> ControllerMethod;
+
 public:
     virtual const char* ClassName() = 0;
     virtual void RegisterMethods() = 0;
+
+
+    virtual ControllerMethod FindMethod(const std::string& name);
+
+protected:
+    std::map<std::string, ControllerMethod> _methods;
 };
 
 /**

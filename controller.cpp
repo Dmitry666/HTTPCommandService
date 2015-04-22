@@ -3,6 +3,18 @@
 
 namespace http {
 
+IController::ControllerMethod IController::FindMethod(const std::string& name)
+{
+    auto it = _methods.find(name);
+    if(it != _methods.end())
+    {
+        return it->second;
+    }
+
+    return ControllerMethod();
+}
+
+//
 std::map<std::string, IController*> ControllerManager::_controllers;
 
 void ControllerManager::RegisterController(IController* controller)

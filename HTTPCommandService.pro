@@ -24,7 +24,8 @@ HEADERS += \
     request_handler.hpp \
     request_parser.hpp \
     server.hpp \
-    controller.h
+    controller.h \
+    common.h
 
 SOURCES += \
     connection.cpp \
@@ -34,7 +35,8 @@ SOURCES += \
     reply.cpp \
     request_handler.cpp \
     request_parser.cpp \
-    server.cpp
+    server.cpp \
+    controller.cpp
 
 
 win32 {

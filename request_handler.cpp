@@ -12,15 +12,17 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+
 #include "mime_types.hpp"
 #include "reply.hpp"
 #include "request.hpp"
+#include "controller.h"
 
 namespace http {
 namespace server {
 
 request_handler::request_handler(const std::string& doc_root)
-  : doc_root_(doc_root)
+    : doc_root_(doc_root)
 {}
 
 void request_handler::handle_request(const request& req, reply& rep)
@@ -35,7 +37,7 @@ void request_handler::handle_request(const request& req, reply& rep)
 
     // Request path must be absolute and not contain "..".
     if (request_path.empty() || request_path[0] != '/'
-      || request_path.find("..") != std::string::npos)
+        || request_path.find("..") != std::string::npos)
     {
         rep = reply::stock_reply(reply::bad_request);
         return;
@@ -46,6 +48,27 @@ void request_handler::handle_request(const request& req, reply& rep)
     {
         request_path += "index.html";
     }
+
+    //
+    std::string controllerName;
+    std::string commandName;
+    std::string arguments;
+
+    IController* icontroller = ControllerManager::FindController(controllerName);
+    if(icontroller == nullptr)
+    {
+        rep = reply::stock_reply(reply::not_found);
+        return;
+    }
+
+    auto method =  icontroller->FindMethod(commandName);
+    if( !method )
+    {
+        rep = reply::stock_reply(reply::not_found);
+        return;
+    }
+
+    method(icontroller);
 
     // Determine the file extension.
     std::size_t last_slash_pos = request_path.find_last_of("/");
@@ -114,6 +137,7 @@ bool request_handler::url_decode(const std::string& in, std::string& out)
             out += in[i];
         }
     }
+
     return true;
 }
 
