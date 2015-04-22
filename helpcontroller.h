@@ -14,9 +14,7 @@ class HelpController : public IController
     CONTROLLER_REGISTER(HelpController, "Help", "Help information.")
 
 public:
-    //CONTROLLER_ACTION(Test);
-
-    void ShowControllers(const std::map<std::string, std::string>& arguments, std::string& content);
+    CONTROLLER_ACTION(HelpController, ShowControllers)
 };
 
 } // End http.

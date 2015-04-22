@@ -5,14 +5,9 @@ using namespace std;
 namespace http {
 
 CONTROLLER_REGISTERIMPL(DefaultController)
-//CONTROLLER_ACTIONIMPL(DefaultController, Test)
 
-void DefaultController::RegisterMethods()
-{
-    TRegisterMethod("Test", "Action from test.", &DefaultController::Test);
-}
-
-void DefaultController::Test(const map<string, string>& arguments, string& content)
+CONTROLLER_ACTIONIMPL(DefaultController, Test, "Test", "Action from test.")
+void DefaultController::Test(const ControllerArguments& arguments, ControllerOutput& content)
 {
     content.append("Default Controller: Hello. I am work.\n");
     for(auto& pair : arguments)

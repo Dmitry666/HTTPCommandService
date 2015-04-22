@@ -10,9 +10,7 @@ class DefaultController : public IController
     CONTROLLER_REGISTER(DefaultController, "DeafaultTest", "Controller from testing.")
 
 public:
-    //CONTROLLER_ACTION(Test);
-
-    void Test(const std::map<std::string, std::string>& arguments, std::string& content);
+    CONTROLLER_ACTION(DefaultController, Test)
 };
 
 } // End http.

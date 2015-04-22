@@ -5,16 +5,8 @@
 
 namespace http {
 
-template<typename Type, typename Collection>
-class TControllerRegistrar
-{
-public:
-    TControllerRegistrar()
-    {
-        Collection::RegisterController(new Type() );
-    }
-};
-
+typedef std::map<std::string, std::string> ControllerArguments;
+typedef std::string ControllerOutput;
 
 #define CONTROLLER_REGISTER(classname, textName, description) \
 private: \
@@ -25,14 +17,19 @@ public: \
     {} \
     \
     virtual const char* ClassName() { return GetClassNameStatic(); } \
-    virtual void RegisterMethods(); \
+    /*virtual void RegisterMethods();*/ \
     static const char* GetClassNameStatic() { return textName; } \
 private:
 
 #define CONTROLLER_REGISTERIMPL(classname) \
     const TControllerRegistrar<classname, ControllerManager> classname::creator##classname;
 
+#define CONTROLLER_ACTION(classname, methodname) \
+    void methodname(const ControllerArguments& arguments, ControllerOutput& contents); \
+    static const TMethodRegistrar<classname> creator##classname##methodname;
 
+#define CONTROLLER_ACTIONIMPL(classname, methodname, actionname, description) \
+    const TMethodRegistrar<classname> classname::creator##classname##methodname(actionname, description, &classname::methodname);
 /*
 class ControllerMethod
 {
@@ -64,7 +61,7 @@ public:
      * @param arguments request arguments.
      * @param contents out content.
      */
-    virtual void Execute(class IController* obj, const std::map<std::string, std::string>& arguments, std::string& contents) = 0;
+    virtual void Execute(class IController* obj, const ControllerArguments& arguments, ControllerOutput& contents) = 0;
 
     /**
      * @brief Execute operator.
@@ -73,7 +70,7 @@ public:
      * @param contents out content.
      * @return controller method reference.
      */
-    ControllerMethod& operator ()(class IController* obj, const std::map<std::string, std::string>& arguments, std::string& contents)
+    ControllerMethod& operator ()(class IController* obj, const ControllerArguments& arguments, ControllerOutput& contents)
     {
         this->Execute(obj, arguments, contents);
         return (*this);
@@ -87,6 +84,7 @@ private:
     std::string _name;
     std::string _description;
 };
+
 
 /**
  * @brief Template controller action.
@@ -102,7 +100,7 @@ public:
         , _function(function)
     {}
 
-    virtual void Execute(class IController* obj, const std::map<std::string, std::string>& arguments, std::string& contents) override
+    virtual void Execute(class IController* obj, const ControllerArguments& arguments, ControllerOutput& contents) override
     {
         ClassType* class_ = static_cast<ClassType*>(obj);
         _function(*class_, arguments, contents);
@@ -128,7 +126,6 @@ public:
     {}
 
     virtual const char* ClassName() = 0;
-    virtual void RegisterMethods() = 0;
 
     /**
      * @brief Find method
@@ -159,7 +156,6 @@ protected:
     std::string _name;
     std::string _description;
     std::map<std::string, ControllerMethodRef> _methods;
-
 };
 
 /**
@@ -190,6 +186,30 @@ public:
 private:
     //static ControllerManager& Instance();
     static std::map<std::string, IController*> _controllers;
+};
+
+template<typename Type, typename Collection>
+class TControllerRegistrar
+{
+public:
+    TControllerRegistrar()
+    {
+        Collection::RegisterController(new Type() );
+    }
+};
+
+template<typename ClassType>
+class TMethodRegistrar
+{
+public:
+    TMethodRegistrar(const std::string& name,
+                     const std::string& description,
+                     void(ClassType:: *function)(const ControllerArguments&, ControllerOutput&)
+                     )
+    {
+        IController* controller = ControllerManager::FindController(ClassType::GetClassNameStatic());
+        controller->TRegisterMethod(name, description, function);
+    }
 };
 
 } // End http.

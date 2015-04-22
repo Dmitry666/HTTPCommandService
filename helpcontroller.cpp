@@ -5,15 +5,31 @@ using namespace std;
 namespace http {
 
 CONTROLLER_REGISTERIMPL(HelpController)
-//CONTROLLER_ACTIONIMPL(DefaultController, Test)
 
-void HelpController::RegisterMethods()
+CONTROLLER_ACTIONIMPL(HelpController, ShowControllers, "ShowControllers", "Print all controller with their actions.")
+void HelpController::ShowControllers(const ControllerArguments& arguments, ControllerOutput& content)
 {
-    TRegisterMethod("ShowControllers", "Print all controller with their actions.", &HelpController::ShowControllers);
-}
+    enum OutputFormat
+    {
+        OF_Text,
+        OF_Json,
+        OF_Xml
+    };
 
-void HelpController::ShowControllers(const map<string, string>& arguments, string& content)
-{
+    OutputFormat outputFormat = OutputFormat::OF_Text;
+    auto it = arguments.find("format");
+    if(it = arguments.end())
+    {
+        const string formatText = it->second;
+
+        if(formatText == "text")
+            outputFormat = OutputFormat::OF_Text;
+        else if(formatText == "json")
+            outputFormat = OutputFormat::OF_Json;
+        else if(formatText == "xml")
+            outputFormat = OutputFormat::OF_Xml;
+    }
+
     content.append("Controllers:\n\n");
 
     for(auto& controllerPair : ControllerManager::GetControllers())
