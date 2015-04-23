@@ -6,8 +6,18 @@ namespace http {
 
 CONTROLLER_REGISTERIMPL(DefaultController)
 
-CONTROLLER_ACTIONIMPL(DefaultController, Test, "Test", "Action from test.")
-void DefaultController::Test(const ControllerArguments& arguments, ControllerOutput& content)
+bool DefaultController::Validate(const SessionId& sessionId, const ControllerArguments& arguments) const
+{
+    return true;
+}
+
+CONTROLLER_ACTIONVALIDATEIMPL(DefaultController, Test, "Test", "Action from test.")
+bool DefaultController::TestValidate(const SessionId& sessionId, const ControllerArguments& arguments) const
+{
+    return true;
+}
+
+void DefaultController::Test(const SessionId& sessionId, const ControllerArguments& arguments, ControllerOutput& content)
 {
     content.append("Default Controller: Hello. I am work.\n");
     for(auto& pair : arguments)

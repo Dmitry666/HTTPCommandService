@@ -6,8 +6,18 @@ namespace http {
 
 CONTROLLER_REGISTERIMPL(HelpController)
 
-CONTROLLER_ACTIONIMPL(HelpController, ShowControllers, "ShowControllers", "Print all controller with their actions.")
-void HelpController::ShowControllers(const ControllerArguments& arguments, ControllerOutput& content)
+bool HelpController::Validate(const SessionId& sessionId, const ControllerArguments& arguments) const
+{
+    return true;
+}
+
+CONTROLLER_ACTIONVALIDATEIMPL(HelpController, ShowControllers, "ShowControllers", "Print all controller with their actions.")
+bool HelpController::ShowControllersValidate(const SessionId& sessionId, const ControllerArguments& arguments) const
+{
+    return true;
+}
+
+void HelpController::ShowControllers(const SessionId& sessionId, const ControllerArguments& arguments, ControllerOutput& content)
 {
     enum OutputFormat
     {
@@ -18,7 +28,7 @@ void HelpController::ShowControllers(const ControllerArguments& arguments, Contr
 
     OutputFormat outputFormat = OutputFormat::OF_Text;
     auto it = arguments.find("format");
-    if(it == arguments.end())
+    if(it != arguments.end())
     {
         const string formatText = it->second;
 

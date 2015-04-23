@@ -7,10 +7,10 @@ namespace http {
 
 class DefaultController : public IController
 {
-    CONTROLLER_REGISTER(DefaultController, "DeafaultTest", "Controller from testing.")
+    CONTROLLERVALIDATE_REGISTER(DefaultController, "DeafaultTest", "Controller from testing.")
 
 public:
-    CONTROLLER_ACTION(DefaultController, Test)
+    CONTROLLER_ACTIONVALIDATE(DefaultController, Test)
 };
 
 } // End http.

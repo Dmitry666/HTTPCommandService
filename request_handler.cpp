@@ -46,6 +46,7 @@ request_handler::request_handler(const string& doc_root)
 void request_handler::handle_request(const request& req, reply& rep)
 {
     // Decode url to path.
+    //req.headers
     string request_path;
     if (!url_decode(req.uri, request_path))
     {
@@ -116,8 +117,17 @@ void request_handler::handle_request(const request& req, reply& rep)
         }
     }
 
-    (*methodRef)(icontroller, argumentsMap, rep.content);
+    SessionId sessionId;
+    bool validate = methodRef->Validate(icontroller, sessionId, argumentsMap) ||
+            icontroller->Validate(sessionId, argumentsMap);
 
+    if(!validate)
+    {
+        rep = reply::stock_reply(reply::not_found);
+        return;
+    }
+
+    (*methodRef)(icontroller, sessionId, argumentsMap, rep.content);
     /*
     // Determine the file extension.
     std::size_t last_slash_pos = request_path.find_last_of("/");
@@ -144,11 +154,14 @@ void request_handler::handle_request(const request& req, reply& rep)
         rep.content.append(buf, is.gcount());
     */
 
-    rep.headers.resize(2);
+    rep.headers.resize(3);
     rep.headers[0].name = "Content-Length";
     rep.headers[0].value = std::to_string(rep.content.size());
     rep.headers[1].name = "Content-Type";
     //rep.headers[1].value = mime_types::extension_to_type(extension);
+
+    rep.headers[2].name = "Set-Cookie";
+    rep.headers[2].value = "name=newvalue;";
 }
 
 bool request_handler::url_decode(const std::string& in, std::string& out)

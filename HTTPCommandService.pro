@@ -7,6 +7,7 @@
 TARGET = HTTPCommandService
 TEMPLATE = app
 
+DEFINES += WITH_JAVASCRIPT
 CONFIG += c++11
 
 win32 {
@@ -28,7 +29,14 @@ HEADERS += \
     common.h \
     defaultcontroller.h \
     delegate.h \
-    helpcontroller.h
+    helpcontroller.h \
+    javascriptcontroller.h \
+    modulemanager.h \
+    module.h \
+    directoryinfo.h \
+    fileinfo.h \
+    javascriptmanager.h \
+    sessionmanager.h
 
 SOURCES += \
     connection.cpp \
@@ -41,7 +49,13 @@ SOURCES += \
     server.cpp \
     controller.cpp \
     defaultcontroller.cpp \
-    helpcontroller.cpp
+    helpcontroller.cpp \
+    javascriptcontroller.cpp \
+    modulemanager.cpp \
+    directoryinfo.cpp \
+    fileinfo.cpp \
+    javascriptmanager.cpp \
+    sessionmanager.cpp
 
 
 win32 {

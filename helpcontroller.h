@@ -11,10 +11,10 @@ namespace http {
  */
 class HelpController : public IController
 {
-    CONTROLLER_REGISTER(HelpController, "Help", "Help information.")
+    CONTROLLERVALIDATE_REGISTER(HelpController, "Help", "Help information.")
 
 public:
-    CONTROLLER_ACTION(HelpController, ShowControllers)
+    CONTROLLER_ACTIONVALIDATE(HelpController, ShowControllers)
 };
 
 } // End http.
