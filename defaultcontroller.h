@@ -7,7 +7,7 @@ namespace http {
 
 class DefaultController : public IController
 {
-    CONTROLLERVALIDATE_REGISTER(DefaultController, "DeafaultTest", "Controller from testing.")
+    CONTROLLERVALIDATE_REGISTER(DefaultController, "DefaultTest", "Controller from testing.")
 
 public:
     CONTROLLER_ACTIONVALIDATE(DefaultController, Test)

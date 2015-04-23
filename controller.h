@@ -8,9 +8,31 @@ namespace http {
 typedef std::map<std::string, std::string> ControllerArguments;
 typedef std::string ControllerOutput;
 
+typedef std::string SessionKey;
 struct SessionId
 {
     int32 Id;
+    SessionKey Key;
+
+    SessionId()
+        : Id(-1)
+    {}
+
+    SessionId(const SessionId& sessionId)
+        : Id(sessionId.Id)
+    {}
+
+    bool IsValid() const
+    {
+        return Id != -1;
+    }
+
+    SessionId& operator = (const SessionId& sessionId)
+    {
+        Id = sessionId.Id;
+        Key = sessionId.Key;
+        return (*this);
+    }
 };
 
 #define CONTROLLER_REGISTER(classname, textName, description) \

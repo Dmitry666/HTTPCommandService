@@ -20,6 +20,8 @@ bool DefaultController::TestValidate(const SessionId& sessionId, const Controlle
 void DefaultController::Test(const SessionId& sessionId, const ControllerArguments& arguments, ControllerOutput& content)
 {
     content.append("Default Controller: Hello. I am work.\n");
+    content.append("User: " + std::to_string(sessionId.Id) + ".\n");
+
     for(auto& pair : arguments)
     {
         content.append(pair.first + " = " + pair.second + "\n");

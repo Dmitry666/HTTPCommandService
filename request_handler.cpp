@@ -16,7 +16,9 @@
 #include "mime_types.hpp"
 #include "reply.hpp"
 #include "request.hpp"
+
 #include "controller.h"
+#include "sessionmanager.h"
 
 using namespace std;
 
@@ -45,6 +47,22 @@ request_handler::request_handler(const string& doc_root)
 
 void request_handler::handle_request(const request& req, reply& rep)
 {
+    SessionKey sessionKey;
+    for(const header& h : req.headers)
+    {
+        if(h.name == "Cookie")
+        {
+            const vector<string> blocks = split(h.value, ';');
+            for(const string& block : blocks)
+            {
+                const vector<string> pair = split(block, '=');
+                if(pair.size() == 2 && pair[0] == "RMID")
+                {
+                    sessionKey = pair[1];
+                }
+            }
+        }
+    }
     // Decode url to path.
     //req.headers
     string request_path;
@@ -117,7 +135,19 @@ void request_handler::handle_request(const request& req, reply& rep)
         }
     }
 
+#ifdef WITH_COOKIE
+    SessionId sessionId = sessionKey.empty() ?
+                SessionManager::NewSession() :
+                SessionManager::FindSessionByKey(sessionKey);
+
+    if(!sessionId.IsValid())
+    {
+        sessionId = SessionManager::NewSession();
+    }
+#else
     SessionId sessionId;
+#endif
+
     bool validate = methodRef->Validate(icontroller, sessionId, argumentsMap) ||
             icontroller->Validate(sessionId, argumentsMap);
 
@@ -153,15 +183,24 @@ void request_handler::handle_request(const request& req, reply& rep)
     while (is.read(buf, sizeof(buf)).gcount() > 0)
         rep.content.append(buf, is.gcount());
     */
+#ifdef WITH_COOKIE
+    rep.headers.resize(2 + int32(sessionKey.empty()));
+#else
+    rep.headers.resize(2);
+#endif
 
-    rep.headers.resize(3);
     rep.headers[0].name = "Content-Length";
     rep.headers[0].value = std::to_string(rep.content.size());
     rep.headers[1].name = "Content-Type";
     //rep.headers[1].value = mime_types::extension_to_type(extension);
 
-    rep.headers[2].name = "Set-Cookie";
-    rep.headers[2].value = "name=newvalue;";
+#ifdef WITH_COOKIE
+    if(sessionKey.empty())
+    {
+        rep.headers[2].name = "Set-Cookie";
+        rep.headers[2].value = "RMID=" + sessionId.Key + ";";
+    }
+#endif
 }
 
 bool request_handler::url_decode(const std::string& in, std::string& out)
