@@ -12,7 +12,7 @@ DEFINES += \
     WITH_COOKIE \
     WITH_JSONCPP \
     #WITH_TINYXML2 \
-    WITH_SSL \
+    #WITH_SSL \
     WITH_CTPP
 
 CONFIG += c++11
@@ -63,7 +63,9 @@ HEADERS += \
     directoryinfo.h \
     fileinfo.h \
     javascriptmanager.h \
-    sessionmanager.h
+    sessionmanager.h \
+    sslserver.hpp \
+    sslconnection.hpp
 
 SOURCES += \
     connection.cpp \
@@ -82,7 +84,9 @@ SOURCES += \
     directoryinfo.cpp \
     fileinfo.cpp \
     javascriptmanager.cpp \
-    sessionmanager.cpp
+    sessionmanager.cpp \
+    sslserver.cpp \
+    sslconnection.cpp
 
 
 win32 {
