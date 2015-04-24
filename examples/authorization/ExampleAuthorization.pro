@@ -4,8 +4,10 @@
 #
 #-------------------------------------------------
 
-TARGET = HTTPCommandService
-TEMPLATE = app
+TARGET = ExampleCppModule
+TEMPLATE = lib
+
+QMAKE_CXXFLAGS = -fPIC
 
 DEFINES += \
     #WITH_JAVASCRIPT \
@@ -16,6 +18,9 @@ DEFINES += \
     WITH_CTPP
 
 CONFIG += c++11
+
+INCLUDEPATH += ../../
+LIBS += -L../../
 
 win32 {
     mingw {
@@ -43,50 +48,11 @@ win32 {
 }
 
 HEADERS += \
-    connection.hpp \
-    connection_manager.hpp \
-    header.hpp \
-    mime_types.hpp \
-    reply.hpp \
-    request.hpp \
-    request_handler.hpp \
-    request_parser.hpp \
-    server.hpp \
-    controller.h \
-    common.h \
-    defaultcontroller.h \
-    delegate.h \
-    helpcontroller.h \
-    javascriptcontroller.h \
-    modulemanager.h \
-    module.h \
-    directoryinfo.h \
-    fileinfo.h \
-    javascriptmanager.h \
-    sessionmanager.h \
-    sslserver.hpp \
-    sslconnection.hpp
-
-SOURCES += \
-    connection.cpp \
-    connection_manager.cpp \
-    main.cpp \
-    mime_types.cpp \
-    reply.cpp \
-    request_handler.cpp \
-    request_parser.cpp \
-    server.cpp \
-    controller.cpp \
-    defaultcontroller.cpp \
-    helpcontroller.cpp \
-    javascriptcontroller.cpp \
-    modulemanager.cpp \
-    directoryinfo.cpp \
-    fileinfo.cpp \
-    javascriptmanager.cpp \
-    sessionmanager.cpp \
-    sslserver.cpp \
-    sslconnection.cpp
+    authorizationmodule.h \
+    usercontroller.h
+SOURCES += \ 
+    authorizationmodule.cpp \
+    usercontroller.cpp
 
 
 win32 {

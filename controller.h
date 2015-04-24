@@ -5,7 +5,46 @@
 
 namespace http {
 
-typedef std::map<std::string, std::string> ControllerArguments;
+//typedef std::map<std::string, std::string> ControllerArguments;
+struct ControllerArguments
+{
+    typedef std::map<std::string, std::string> ArgumentsContainer;
+
+    ControllerArguments()
+    {}
+
+    ControllerArguments(const ControllerArguments& ca)
+        : _argumentMap(ca._argumentMap)
+    {}
+
+    ControllerArguments(const ArgumentsContainer& argumentMap)
+        : _argumentMap(argumentMap)
+    {}
+
+    std::string operator [](const std::string& key) const
+    {
+        auto it = _argumentMap.find(key);
+        if(it != _argumentMap.end())
+        {
+            return it->second;
+        }
+
+        return "";
+    }
+
+    // From stl.
+    typename ArgumentsContainer::iterator begin() {return _argumentMap.begin();}
+    typename ArgumentsContainer::const_iterator begin() const {return _argumentMap.begin();}
+
+    typename ArgumentsContainer::iterator end() {return _argumentMap.end();}
+    typename ArgumentsContainer::const_iterator end() const {return _argumentMap.end();}
+
+    typename ArgumentsContainer::iterator find(const std::string& key) {return _argumentMap.find(key);}
+    typename ArgumentsContainer::const_iterator find(const std::string& key) const {return _argumentMap.find(key);}
+private:
+    ArgumentsContainer _argumentMap;
+};
+
 typedef std::string ControllerOutput;
 
 typedef std::string SessionKey;
