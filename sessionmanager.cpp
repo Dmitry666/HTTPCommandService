@@ -1,5 +1,10 @@
 #include "sessionmanager.h"
 
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/uuid/uuid_io.hpp>
+
 namespace http {
 
 std::map<SessionKey, SessionId> _sessions;
@@ -9,7 +14,9 @@ SessionId SessionManager::NewSession()
 {
     SessionId sessionId;
     sessionId.Id = ++_lastSessionId;
-    sessionId.Key = std::to_string(sessionId.Id);
+
+    boost::uuids::uuid tag = boost::uuids::random_generator()();
+    sessionId.Key = boost::lexical_cast<std::string>(tag);
 
     _sessions.insert(std::make_pair(sessionId.Key, sessionId));
     return sessionId;

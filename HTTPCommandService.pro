@@ -7,12 +7,39 @@
 TARGET = HTTPCommandService
 TEMPLATE = app
 
-DEFINES += WITH_JAVASCRIPT WITH_COOKIE
+DEFINES += \
+    WITH_JAVASCRIPT \
+    WITH_COOKIE \
+    WITH_JSONCPP \
+    #WITH_TINYXML2 \
+    WITH_SSL \
+    WITH_CTPP
+
 CONFIG += c++11
 
 win32 {
+    mingw {
+        INCLUDEPATH += /usr/include
+        LIBS += -L/usr/lib
+    }
+    else {
+        contains(DEFINES, WITH_JSONCPP) {
+            JSONDIR = $(EXTERNALDIR)/jsoncpp-src-0.5.0
+            INCLUDEPATH += $${JSONDIR}/include
+            LIBS += -L$${JSONDIR}/lib
+        }
+
+        contains(DEFINES, WITH_TINYXML2) {
+            TINYXMLDIR = $(EXTERNALDIR)/tinyxml2-master
+            INCLUDEPATH += $${TINYXMLDIR}
+            LIBS += -L$${TINYXMLDIR}/lib
+        }
+
+    }
+
     # Boost
-    INCLUDEPATH += $(EXTERNALDIR)/boost_1_54_0
+    BOOSTDIR = $(EXTERNALDIR)/boost_1_54_0
+    INCLUDEPATH += $${BOOSTDIR}
 }
 
 HEADERS += \
@@ -91,6 +118,13 @@ unix {
     LIBS += -Wl,-rpath=/usr/local/lib
     LIBS += -lboost_system -lboost_filesystem -lboost_thread -lboost_serialization
     LIBS += -lpthread
-
     #LIBS += -lssl -lcrypto
+}
+
+contains(DEFINES, WITH_JSONCPP) {
+    LIBS += -ljsoncpp
+}
+
+contains(DEFINES, WITH_TINYXML2) {
+    LIBS += -tinyxml2
 }
