@@ -1,6 +1,8 @@
 #include "helpcontroller.h"
 
+#ifdef WITH_JSONCPP
 #include <json/writer.h>
+#endif
 
 using namespace std;
 

@@ -35,25 +35,35 @@ HttpService::~HttpService()
 bool HttpService::Start()
 {
     _thread = std::thread(&HttpService::Run, this);
+    return true;
 }
 
 bool HttpService::Stop()
 {
     //_s->S
+    return true;
 }
 
 bool HttpService::Join(float time)
 {
     _thread.join();
+    return true;
 }
 
 void HttpService::Run()
 {
-    // Initialise the server.
-    _s = new server::server(_address, _port, _rootDir);
+    try
+    {
+        // Initialise the server.
+        _s = new server::server(_address, _port, _rootDir);
 
-    // Run the server until stopped.
-    _s->run();
+        // Run the server until stopped.
+        _s->run();
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << "exception: " << e.what() << "\n";
+    }
 
     delete _s;
     _s = nullptr;

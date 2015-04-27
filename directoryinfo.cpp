@@ -87,6 +87,7 @@ bool DirectoryInfo::IsExist(const std::string& directoryPath)
 #if 0
     return boost::filesystem::exists(directoryPath);
 #endif
+    return true;
 }
 
 } // End http.

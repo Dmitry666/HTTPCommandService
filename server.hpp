@@ -11,6 +11,7 @@
 #ifndef HTTP_SERVER_HPP
 #define HTTP_SERVER_HPP
 
+#include "common-private.h"
 #include <boost/asio.hpp>
 #include <string>
 #include "connection.hpp"

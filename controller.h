@@ -33,14 +33,13 @@ struct ControllerArguments
     }
 
     // From stl.
-    typename ArgumentsContainer::iterator begin() {return _argumentMap.begin();}
-    typename ArgumentsContainer::const_iterator begin() const {return _argumentMap.begin();}
+    ArgumentsContainer::iterator begin() {return _argumentMap.begin();}
+    ArgumentsContainer::const_iterator begin() const {return _argumentMap.begin();}
+    ArgumentsContainer::iterator end() {return _argumentMap.end();}
+    ArgumentsContainer::const_iterator end() const {return _argumentMap.end();}
+    ArgumentsContainer::iterator find(const std::string& key) {return _argumentMap.find(key);}
+    ArgumentsContainer::const_iterator find(const std::string& key) const {return _argumentMap.find(key);}
 
-    typename ArgumentsContainer::iterator end() {return _argumentMap.end();}
-    typename ArgumentsContainer::const_iterator end() const {return _argumentMap.end();}
-
-    typename ArgumentsContainer::iterator find(const std::string& key) {return _argumentMap.find(key);}
-    typename ArgumentsContainer::const_iterator find(const std::string& key) const {return _argumentMap.find(key);}
 private:
     ArgumentsContainer _argumentMap;
 };
@@ -211,8 +210,13 @@ template<typename ClassType>
 class TControllerMethod : public ControllerMethod
 {
 public:
+#ifdef _MSC_VER
+    typedef void(ClassType::*FunctionType)(const SessionId&, const ControllerArguments&, ControllerOutput& outContent);
+    typedef bool(ClassType::*ValidateType)(const SessionId&, const ControllerArguments&)const;
+#else
     typedef std::function<void(ClassType&, const SessionId&, const ControllerArguments&, ControllerOutput& outContent)> FunctionType;
     typedef std::function<bool(const ClassType&, const SessionId&, const ControllerArguments&)> ValidateType;
+#endif
 
 public:
     TControllerMethod(const std::string& name,
@@ -236,7 +240,11 @@ public:
         if(_validate)
         {
             ClassType* class_ = static_cast<ClassType*>(obj);
+#ifdef _MSC_VER
+            return (class_->*_validate)(sessionId, arguments);
+#else
             return _validate(*class_, sessionId, arguments);
+#endif
         }
 
         return true;
@@ -248,7 +256,12 @@ public:
                          ControllerOutput& contents) override
     {
         ClassType* class_ = static_cast<ClassType*>(obj);
+
+#ifdef _MSC_VER
+        (class_->*_function)(sessionId, arguments, contents);
+#else
         _function(*class_, sessionId, arguments, contents);
+#endif
     }
 
 private:

@@ -10,24 +10,43 @@ TEMPLATE = lib
 DEFINES += \
     #WITH_JAVASCRIPT \
     WITH_COOKIE \
-    WITH_JSONCPP \
+    #WITH_JSONCPP \
     #WITH_TINYXML2 \
     #WITH_SSL \
     WITH_CTPP
 
+
+DEFINES += CRT_SECURE_NO_WARNINGS
+
 CONFIG += c++11
-QMAKE_CXXFLAGS = -fPIC
 
 win32 {
+
     mingw {
+        QMAKE_CXXFLAGS = -fPIC
+
         INCLUDEPATH += /usr/include
         LIBS += -L/usr/lib
-    }
-    else {
+
+        # Boost
+        BOOSTDIR = $(EXTERNALDIR)/boost_1_54_0
+        INCLUDEPATH += $${BOOSTDIR}
+    } else {
+
+        DEFINES += \
+            CRT_SECURE_NO_WARNINGS \
+            _WIN32_WINDOWS \
+            BOOST_ASIO_HAS_MOVE
+
         contains(DEFINES, WITH_JSONCPP) {
             JSONDIR = $(EXTERNALDIR)/jsoncpp-src-0.5.0
             INCLUDEPATH += $${JSONDIR}/include
-            LIBS += -L$${JSONDIR}/lib
+
+            debug {
+                LIBS += -L$${JSONDIR}/lib/debug
+            } else {
+                LIBS += -L$${JSONDIR}/lib/release
+            }
         }
 
         contains(DEFINES, WITH_TINYXML2) {
@@ -36,11 +55,15 @@ win32 {
             LIBS += -L$${TINYXMLDIR}/lib
         }
 
+        # Boost
+        BOOSTDIR = $(EXTERNALDIR)/boost_1_56_0
+        INCLUDEPATH += $${BOOSTDIR}
+        LIBS += -L$${BOOSTDIR}/lib32-msvc-12.0
     }
+}
 
-    # Boost
-    BOOSTDIR = $(EXTERNALDIR)/boost_1_54_0
-    INCLUDEPATH += $${BOOSTDIR}
+unix {
+    QMAKE_CXXFLAGS = -fPIC
 }
 
 HEADERS += \
@@ -67,7 +90,8 @@ HEADERS += \
     sessionmanager.h \
     sslserver.hpp \
     sslconnection.hpp \
-    httpservice.h
+    httpservice.h \
+    common-private.h
 
 SOURCES += \
     connection.cpp \
@@ -92,30 +116,34 @@ SOURCES += \
 
 
 win32 {
-    BOOST_VER = 1_54
-    COMPILER_SHORT = mgw48
+    mingw {
+        BOOST_VER = 1_54
+        COMPILER_SHORT = mgw48
 
-    debug {
-        BOOST_SUFFIX = $${COMPILER_SHORT}-sd-$${BOOST_VER}
-    }
+        debug {
+            BOOST_SUFFIX = $${COMPILER_SHORT}-sd-$${BOOST_VER}
+        }
 
-    release {
-        BOOST_SUFFIX = $${COMPILER_SHORT}-s-$${BOOST_VER}
-    }
+        release {
+            BOOST_SUFFIX = $${COMPILER_SHORT}-s-$${BOOST_VER}
+        }
 
-    LIBS += -L$(EXTERNALDIR)/boost_1_54_0/stage/lib
+        LIBS += -L$(EXTERNALDIR)/boost_1_54_0/stage/lib
 
-    LIBS += -lboost_system-$${BOOST_SUFFIX} -lboost_filesystem-$${BOOST_SUFFIX}
+        LIBS += -lboost_system-$${BOOST_SUFFIX} -lboost_filesystem-$${BOOST_SUFFIX}
 
-    debug {
-    LIBS += -lboost_thread-mgw48-mt-sd-1_54
-    }
+        debug {
+        LIBS += -lboost_thread-mgw48-mt-sd-1_54
+        }
 
-    release {
-    LIBS += -lboost_thread-mgw48-mt-s-1_54
+        release {
+        LIBS += -lboost_thread-mgw48-mt-s-1_54
+        }
+    } else {
     }
 
     LIBS += -lws2_32 -lmswsock
+
 }
 
 unix {
@@ -128,7 +156,15 @@ unix {
 }
 
 contains(DEFINES, WITH_JSONCPP) {
-    LIBS += -ljsoncpp
+    win32 {
+        mingw {
+            LIBS += -ljsoncpp
+        } else {
+            LIBS += -ljsoncpp_mt
+        }
+    } else {
+        LIBS += -ljsoncpp
+    }
 }
 
 contains(DEFINES, WITH_TINYXML2) {

@@ -32,7 +32,10 @@ void IController::RegisterMethod(ControllerMethodRef method)
 
 //
 map<string, IController*> ControllerManager::_controllers
-__attribute__ ((init_priority (101)));
+#ifndef _MSC_VER
+__attribute__ ((init_priority (101)))
+#endif
+;
 
 void ControllerManager::RegisterController(IController* controller)
 {
