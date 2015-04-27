@@ -66,7 +66,8 @@ HEADERS += \
     javascriptmanager.h \
     sessionmanager.h \
     sslserver.hpp \
-    sslconnection.hpp
+    sslconnection.hpp \
+    httpservice.h
 
 SOURCES += \
     connection.cpp \
@@ -86,7 +87,8 @@ SOURCES += \
     javascriptmanager.cpp \
     sessionmanager.cpp \
     sslserver.cpp \
-    sslconnection.cpp
+    sslconnection.cpp \
+    httpservice.cpp
 
 
 win32 {
