@@ -30,8 +30,7 @@ SessionId SessionManager::FindSessionByKey(const SessionKey& key)
         return it->second;
     }
 
-    SessionId id;
-    return id;
+    return NewSession();
 }
 
 } // End http.

@@ -59,6 +59,7 @@ struct SessionId
 
     SessionId(const SessionId& sessionId)
         : Id(sessionId.Id)
+        , Key(sessionId.Key)
     {}
 
     bool IsValid() const
@@ -82,6 +83,7 @@ public: \
         : IController(textName, description) \
     {} \
     \
+    virtual bool Construct() override; \
     virtual const char* ClassName() { return GetClassNameStatic(); } \
     /*virtual void RegisterMethods();*/ \
     static const char* GetClassNameStatic() { return textName; } \
@@ -95,6 +97,7 @@ public: \
         : IController(textName, description) \
     {} \
     \
+    virtual bool Construct() override; \
     virtual const char* ClassName() { return GetClassNameStatic(); } \
     virtual bool Validate(const SessionId& sessionId, const ControllerArguments& arguments) const override;\
     /*virtual void RegisterMethods();*/ \
@@ -149,6 +152,11 @@ public:
     virtual ~ControllerMethod()
     {}
 
+    /**
+     * @brief Method contain validate expression.
+     * @return success.
+     */
+    virtual bool IsValidateMethod() const = 0;
 
     /**
      * @brief Validate method from session.
@@ -216,6 +224,11 @@ public:
         , _validate(validate)
     {}
 
+    virtual bool IsValidateMethod() const override
+    {
+        return _validate ? true : false;
+    }
+
     virtual bool Validate(class IController* obj,
                           const SessionId& sessionId,
                           const ControllerArguments& arguments) const override
@@ -258,6 +271,7 @@ public:
         , _description(description)
     {}
 
+    virtual bool Construct() = 0;
     virtual const char* ClassName() = 0;
 
     /**
@@ -291,7 +305,8 @@ public:
                          bool(ClassType:: *validate)(const SessionId&, const ControllerArguments&)const = nullptr)
     {
         typename TControllerMethod<ClassType>::FunctionType actionFunc = method;
-        typename TControllerMethod<ClassType>::ValidateType validateFunc = validate;
+        typename TControllerMethod<ClassType>::ValidateType validateFunc =
+                validate != nullptr ? validate : typename TControllerMethod<ClassType>::ValidateType();
         RegisterMethod(new TControllerMethod<ClassType>(name, description, actionFunc, validateFunc));
     }
 

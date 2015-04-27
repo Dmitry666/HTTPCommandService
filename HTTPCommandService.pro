@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 TARGET = HTTPCommandService
-TEMPLATE = app
+TEMPLATE = lib
 
 DEFINES += \
     #WITH_JAVASCRIPT \
@@ -16,6 +16,7 @@ DEFINES += \
     WITH_CTPP
 
 CONFIG += c++11
+QMAKE_CXXFLAGS = -fPIC
 
 win32 {
     mingw {
@@ -70,7 +71,6 @@ HEADERS += \
 SOURCES += \
     connection.cpp \
     connection_manager.cpp \
-    main.cpp \
     mime_types.cpp \
     reply.cpp \
     request_handler.cpp \
@@ -131,4 +131,43 @@ contains(DEFINES, WITH_JSONCPP) {
 
 contains(DEFINES, WITH_TINYXML2) {
     LIBS += -tinyxml2
+}
+
+
+# Install.
+win32{
+    INSTALL_PREFIX = /usr/include/$$TARGET
+    INSTALL_HEADERS = $$HEADERS
+
+    for(header, INSTALL_HEADERS) {
+        path = $${INSTALL_PREFIX}/$${dirname(header)}
+        eval(headers_$${path}.files += $$header)
+        eval(headers_$${path}.path = $$path)
+        eval(INSTALLS *= headers_$${path})
+    }
+    #target_headers.files  = $$HEADERS
+    #target_headers.path = /usr/include/$$TARGET
+    #INSTALLS += target_headers
+
+    target.path = /usr/lib/
+    INSTALLS += target
+}
+
+
+unix{
+    INSTALL_PREFIX = /usr/include/$$TARGET
+    INSTALL_HEADERS = $$HEADERS
+
+    for(header, INSTALL_HEADERS) {
+        path = $${INSTALL_PREFIX}/$${dirname(header)}
+        eval(headers_$${path}.files += $$header)
+        eval(headers_$${path}.path = $$path)
+        eval(INSTALLS *= headers_$${path})
+    }
+    #target_headers.files  = $$HEADERS
+    #target_headers.path = /usr/include/$$TARGET
+    #INSTALLS += target_headers
+
+    target.path = /usr/lib/
+    INSTALLS += target
 }

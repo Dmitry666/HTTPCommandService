@@ -6,6 +6,11 @@ namespace http {
 
 CONTROLLER_REGISTERIMPL(DefaultController)
 
+bool DefaultController::Construct()
+{
+    return true;
+}
+
 bool DefaultController::Validate(const SessionId& sessionId, const ControllerArguments& arguments) const
 {
     return true;

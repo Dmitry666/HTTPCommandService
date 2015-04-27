@@ -5,6 +5,19 @@
 
 namespace http {
 
+struct User
+{
+    std::string Login;
+    std::string Password;
+
+    User()
+    {}
+
+    User(const User& user)
+        : Login(user.Login)
+        , Password(user.Password)
+    {}
+};
 
 class UserController : public IController
 {
@@ -17,7 +30,7 @@ public:
     CONTROLLER_ACTION(UserController, Logout)
 
 private:
-    bool _authorizated;
+    std::map<int32, User> _users;
 };
 
 }

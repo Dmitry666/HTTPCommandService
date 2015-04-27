@@ -4,6 +4,11 @@
 
 namespace http {
 
+bool JavascriptController::Construct()
+{
+    return true;
+}
+
 bool JavascriptController::ActionExecute(
             const std::string& actionName,
             const SessionId& sessionId,

@@ -8,6 +8,11 @@ namespace http {
 
 CONTROLLER_REGISTERIMPL(HelpController)
 
+bool HelpController::Construct()
+{
+    return true;
+}
+
 bool HelpController::Validate(const SessionId& sessionId, const ControllerArguments& arguments) const
 {
     return true;

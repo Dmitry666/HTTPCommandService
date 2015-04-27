@@ -12,9 +12,15 @@
 #include <string>
 #include <boost/asio.hpp>
 #include "server.hpp"
+#include "modulemanager.h"
+
+using namespace http;
 
 int main(int argc, char* argv[])
 {
+    ModuleManager::Instance().LoadModulesFromFolder("./");
+    ModuleManager::Instance().InitializeAll();
+
     try
     {
         // Check command line arguments.

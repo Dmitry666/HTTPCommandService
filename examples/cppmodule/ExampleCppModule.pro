@@ -7,7 +7,7 @@
 TARGET = ExampleCppModule
 TEMPLATE = lib
 
-QMAKE_CXXFLAGS = -fPIC
+#QMAKE_CXXFLAGS = -fPIC
 
 DEFINES += \
     #WITH_JAVASCRIPT \
@@ -98,3 +98,5 @@ contains(DEFINES, WITH_JSONCPP) {
 contains(DEFINES, WITH_TINYXML2) {
     LIBS += -tinyxml2
 }
+
+LIBS += -lHTTPCommandService

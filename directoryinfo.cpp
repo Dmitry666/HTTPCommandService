@@ -1,8 +1,8 @@
 #include "directoryinfo.h"
 
 
-//#include <boost/filesystem.hpp>
-//namespace fs = boost::filesystem;
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
 
 //inline bool is_directory( file_status f ) { return f.type() == directory_file; }
 //inline bool exists( file_status f )       { return f.type() != status_unknown && f.type() != file_not_found; }
@@ -44,7 +44,7 @@ std::vector<FileInfo> DirectoryInfo::GetFiles() const
 {
     std::vector<FileInfo> files;
 
-#if 0
+//#if 0
     fs::path someDir(_path.c_str());
     fs::directory_iterator end_iter;
 
@@ -59,7 +59,7 @@ std::vector<FileInfo> DirectoryInfo::GetFiles() const
             }
         }
     }
-#endif
+//#endif
     return files;
 }
 

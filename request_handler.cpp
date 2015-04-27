@@ -148,7 +148,7 @@ void request_handler::handle_request(const request& req, reply& rep)
     SessionId sessionId;
 #endif
 
-    bool validate = methodRef->Validate(icontroller, sessionId, argumentsMap) ||
+    bool validate = methodRef->IsValidateMethod() ? methodRef->Validate(icontroller, sessionId, argumentsMap) :
             icontroller->Validate(sessionId, argumentsMap);
 
     if(!validate)
@@ -184,7 +184,7 @@ void request_handler::handle_request(const request& req, reply& rep)
         rep.content.append(buf, is.gcount());
     */
 #ifdef WITH_COOKIE
-    rep.headers.resize(2 + int32(sessionKey.empty()));
+    rep.headers.resize(2 + int32(sessionKey.empty() || sessionKey != sessionId.Key));
 #else
     rep.headers.resize(2);
 #endif
@@ -195,7 +195,7 @@ void request_handler::handle_request(const request& req, reply& rep)
     //rep.headers[1].value = mime_types::extension_to_type(extension);
 
 #ifdef WITH_COOKIE
-    if(sessionKey.empty())
+    if(sessionKey.empty() || sessionKey != sessionId.Key)
     {
         rep.headers[2].name = "Set-Cookie";
         rep.headers[2].value = "RMID=" + sessionId.Key + ";";

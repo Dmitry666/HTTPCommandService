@@ -4,6 +4,11 @@ using namespace std;
 namespace http {
 
 CONTROLLER_REGISTERIMPL(ExampleController)
+bool ExampleController::Construct()
+{
+    return true;
+}
+
 bool ExampleController::Validate(const SessionId& sessionId, const ControllerArguments& arguments) const
 {
     return true;

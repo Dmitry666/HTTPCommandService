@@ -88,4 +88,4 @@ contains(DEFINES, WITH_TINYXML2) {
     LIBS += -tinyxml2
 }
 
-LIBS += HTTPCommandService
+LIBS += -lHTTPCommandService
