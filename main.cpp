@@ -27,9 +27,11 @@ int main(int argc, char* argv[])
         //return 1;
     }
 
+	
+    HttpService service(argc, argv);
+
 	std::cout << "Start HTTP Service: " << _address << ":" << _port << ", " << _root;
-    HttpService service(_address, _port, _root);
-    service.Start();
+    service.Start(_address, _port, _root);
     service.Join();
 
     return 0;

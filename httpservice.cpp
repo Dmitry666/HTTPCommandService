@@ -4,6 +4,7 @@
 #include <boost/asio.hpp>
 #include "server.hpp"
 #include "modulemanager.h"
+#include "javascriptmanager.h"
 
 using namespace http;
 using namespace std;
@@ -13,27 +14,30 @@ http::server::server* _s;
 
 namespace http {
 
-HttpService::HttpService(
-    const std::string& address,
-    const std::string& port,
-    const std::string& root)
-    : _address(address)
-    , _port(port)
-    , _rootDir(root)
+HttpService::HttpService(int argc, char* argv[])
 {
     ModuleManager::Instance().LoadModulesFromFolder("./");
     ModuleManager::Instance().LoadModulesFromFolder(_rootDir);
 
     ModuleManager::Instance().InitializeAll();
+
+	JavascriptManager::Instance().Initialize(argc, argv);
 }
 
 HttpService::~HttpService()
 {
+	JavascriptManager::Instance().Shutdown();
     ModuleManager::Instance().ShutdownAll();
 }
 
-bool HttpService::Start()
+bool HttpService::Start(const std::string& address,
+        const std::string& port,
+        const std::string& root)
 {
+	_address = address;
+	_port = port;
+	_rootDir = root;
+
     _thread = std::thread(&HttpService::Run, this);
     return true;
 }

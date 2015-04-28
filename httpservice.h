@@ -9,13 +9,12 @@ namespace http {
 class HttpService
 {
 public:
-    HCORE_API HttpService(
-        const std::string& address,
-        const std::string& port,
-        const std::string& root);
+    HCORE_API HttpService(int argc, char* argv[]);
     HCORE_API ~HttpService();
 
-    HCORE_API bool Start();
+    HCORE_API bool Start(const std::string& address,
+        const std::string& port,
+        const std::string& root);
     HCORE_API bool Stop();
     HCORE_API bool Join(float time = 0.f);
 
