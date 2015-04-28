@@ -3,6 +3,11 @@
 
 #include "common.h"
 
+#ifdef WITH_JAVASCRIPT
+#include <include/v8.h>
+#include <include/libplatform/libplatform.h>
+#endif
+
 namespace http {
 
 class JavascriptManager
@@ -14,7 +19,11 @@ public:
 	void Initialize(int argc, char* argv[]);
 	void Shutdown();
 
-	int32 Execute(const std::string& file, const std::map<std::string, std::string>& options, std::map<std::string, std::string>& output);
+	int32 Execute(
+		const std::string& file, 
+		const std::map<std::string, std::string>& options, 
+		const std::map<std::string, std::string>& argumentsMap, 
+		std::map<std::string, std::string>& output);
 
 	static JavascriptManager& Instance();
 
@@ -23,6 +32,13 @@ private:
 
 private:
 	std::vector<class JavascriptController*> _controllers;
+	std::map<std::string, std::string> _options;
+	std::map<std::string, std::string> _argumentsMap;
+	std::map<std::string, std::string> _outputs;
+
+#ifdef WITH_JAVASCRIPT
+	v8::Isolate* _isolate;
+#endif
 };
 
 } // End http.

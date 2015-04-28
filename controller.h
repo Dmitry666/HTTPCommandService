@@ -32,6 +32,8 @@ struct ControllerArguments
         return "";
     }
 
+	const std::map<std::string, std::string>& ToArgumentMap() const { return _argumentMap; }
+
     // From stl.
     ArgumentsContainer::iterator begin() {return _argumentMap.begin();}
     ArgumentsContainer::const_iterator begin() const {return _argumentMap.begin();}
@@ -98,7 +100,7 @@ public: \
     \
     virtual bool Construct() override; \
     virtual const char* ClassName() { return GetClassNameStatic(); } \
-    virtual bool Validate(const SessionId& sessionId, const ControllerArguments& arguments) const override;\
+    virtual bool Validate(const SessionId& sessionId, const ControllerArguments& arguments) override;\
     /*virtual void RegisterMethods();*/ \
     static const char* GetClassNameStatic() { return textName; } \
 private:
@@ -118,7 +120,7 @@ private:
 
 #define CONTROLLER_ACTIONVALIDATE(classname, methodname) \
     void methodname(const SessionId& sessionId, const ControllerArguments& arguments, ControllerOutput& outContents); \
-    bool methodname##Validate(const SessionId& sessionId, const ControllerArguments& arguments) const; \
+    bool methodname##Validate(const SessionId& sessionId, const ControllerArguments& arguments); \
     static const TMethodRegistrar<classname> creator##classname##methodname;
 
 #define CONTROLLER_ACTIONVALIDATEIMPL(classname, methodname, actionname, description) \
@@ -164,7 +166,7 @@ public:
      */
     virtual bool Validate(class IController* obj,
                           const SessionId& sessionId,
-                          const ControllerArguments& arguments) const = 0;
+                          const ControllerArguments& arguments) = 0;
 
     /**
      * @brief Execute this controller action.
@@ -212,10 +214,10 @@ class TControllerMethod : public ControllerMethod
 public:
 #ifdef _MSC_VER
     typedef void(ClassType::*FunctionType)(const SessionId&, const ControllerArguments&, ControllerOutput& outContent);
-    typedef bool(ClassType::*ValidateType)(const SessionId&, const ControllerArguments&)const;
+    typedef bool(ClassType::*ValidateType)(const SessionId&, const ControllerArguments&);
 #else
     typedef std::function<void(ClassType&, const SessionId&, const ControllerArguments&, ControllerOutput& outContent)> FunctionType;
-    typedef std::function<bool(const ClassType&, const SessionId&, const ControllerArguments&)> ValidateType;
+    typedef std::function<bool(ClassType&, const SessionId&, const ControllerArguments&)> ValidateType;
 #endif
 
 public:
@@ -235,7 +237,7 @@ public:
 
     virtual bool Validate(class IController* obj,
                           const SessionId& sessionId,
-                          const ControllerArguments& arguments) const override
+                          const ControllerArguments& arguments) override
     {
         if(_validate)
         {
@@ -292,7 +294,7 @@ public:
      * @param sessionId session identificator.
      * @return validation success.
      */
-    virtual bool Validate(const SessionId& sessionId, const ControllerArguments& arguments) const
+    virtual bool Validate(const SessionId& sessionId, const ControllerArguments& arguments)
     {
         return true;
     }
@@ -315,7 +317,7 @@ public:
     void TRegisterMethod(const std::string& name,
                          const std::string& description,
                          void(ClassType:: *method)(const SessionId&, const ControllerArguments&, ControllerOutput& outContent),
-                         bool(ClassType:: *validate)(const SessionId&, const ControllerArguments&)const = nullptr)
+                         bool(ClassType:: *validate)(const SessionId&, const ControllerArguments&) = nullptr)
     {
         typename TControllerMethod<ClassType>::FunctionType actionFunc = method;
         typename TControllerMethod<ClassType>::ValidateType validateFunc =
@@ -404,7 +406,7 @@ public:
     TMethodRegistrar(const std::string& name,
                      const std::string& description,
                      void(ClassType:: *function)(const SessionId&, const ControllerArguments&, ControllerOutput&),
-                     bool(ClassType:: *validate)(const SessionId&, const ControllerArguments&)const = nullptr
+                     bool(ClassType:: *validate)(const SessionId&, const ControllerArguments&) = nullptr
                      )
     {
         IController* controller = ControllerManager::FindController(ClassType::GetClassNameStatic());

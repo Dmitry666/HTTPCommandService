@@ -4,10 +4,10 @@
 using namespace std;
 using namespace v8;
 
+
 // -------------------------
 // --- P r o c e s s o r ---
 // -------------------------
-
 
 static void LogCallback(const FunctionCallbackInfo<Value>& args) 
 {
@@ -22,7 +22,7 @@ static void LogCallback(const FunctionCallbackInfo<Value>& args)
 
 
 // Execute the script and fetch the Process method.
-bool JsHttpRequestProcessor::Initialize(map<string, string>& opts, map<string, string>& output) 
+bool JsHttpRequestProcessor::Initialize(map<string, string>* opts, map<string, string>* output) 
 {
 	// Create a handle scope to hold the temporary references.
 	HandleScope handle_scope(GetIsolate());
@@ -46,7 +46,7 @@ bool JsHttpRequestProcessor::Initialize(map<string, string>& opts, map<string, s
 	Context::Scope context_scope(context);
 
 	// Make the options mapping available within the context
-	if (!InstallMaps(&opts, &output))
+	if (!InstallMaps(opts, output))
 		return false;
 
 	// Compile and run the script
@@ -70,10 +70,68 @@ bool JsHttpRequestProcessor::Initialize(map<string, string>& opts, map<string, s
 	// that to remain after this call returns
 	process_.Reset(GetIsolate(), process_fun);
 
+
+#if 0
+	// name
+	Handle<String> meta_name = String::NewFromUtf8(GetIsolate(), "meta");
+	Handle<Value> meta_val = context->Global()->Get(meta_name);
+
+	if (!meta_val->IsObject())
+		return false;
+
+	Handle<Object> meta_object = Handle<Object>::Cast(meta_val);
+
+
+	std::string name = JSValue::GetString(meta_object, "name");
+	std::string description = JSValue::GetString(meta_object, "description");
+	std::string validator = JSValue::GetString(meta_object, "validator");
+
+	Handle<Object> actions_object = JSValue::GetObject(meta_object, "actions");
+
+	Handle<Array> properties_names = actions_object->GetPropertyNames();
+	for(int i=0;i<properties_names->Length(); ++i)
+	{
+		Handle<Value> name_val = properties_names->Get(i);
+		Handle<Value> action_val = actions_object->Get(name_val);
+		
+		if (action_val->IsObject())
+		{
+			Handle<Object> action_object = Handle<Object>::Cast(action_val);
+
+			String::Utf8Value str(name_val);
+			std::string function_name = *str;
+
+			std::string action_name = JSValue::GetString(action_object, "name");
+			std::string action_description = JSValue::GetString(action_object, "description");
+			std::string action_validator = JSValue::GetString(action_object, "validator");
+		}
+	}
+#endif
+
 	// All done; all went well
 	return true;
 }
 
+#if 0
+Handle<Object> JsHttpRequestProcessor::GetObject(const std::string& name)
+{
+	HandleScope handle_scope(GetIsolate());
+	v8::Local<v8::Context> context =
+		v8::Local<v8::Context>::New(GetIsolate(), context_);
+
+	// Enter this processor's context so all the remaining operations
+	// take place there
+	Context::Scope context_scope(context);
+
+	Handle<String> meta_name = String::NewFromUtf8(GetIsolate(), name.c_str());
+	Handle<Value> meta_val = context->Global()->Get(meta_name);
+
+	if (!meta_val->IsObject())
+		return Handle<Object>();
+
+	return Handle<Object>::Cast(meta_val);
+}
+#endif
 
 bool JsHttpRequestProcessor::ExecuteScript(Handle<String> script) 
 {
@@ -168,6 +226,43 @@ bool JsHttpRequestProcessor::Process(HttpRequest* request)
 	}
 }
 
+bool JsHttpRequestProcessor::Process(std::map<std::string, std::string>* arguments)
+{
+	// Create a handle scope to keep the temporary object references.
+	HandleScope handle_scope(GetIsolate());
+
+	v8::Local<v8::Context> context =
+		v8::Local<v8::Context>::New(GetIsolate(), context_);
+
+	// Enter this processor's context so all the remaining operations
+	// take place there
+	Context::Scope context_scope(context);
+
+	// Wrap the C++ request object in a JavaScript wrapper
+	Handle<Object> request_obj = WrapMap(arguments);
+
+	// Set up an exception handler before calling the Process function
+	TryCatch try_catch;
+
+	// Invoke the process function, giving the global object as 'this'
+	// and one argument, the request.
+	const int argc = 1;
+	Handle<Value> argv[argc] = { request_obj };
+	v8::Local<v8::Function> process =
+		v8::Local<v8::Function>::New(GetIsolate(), process_);
+
+	Handle<Value> result = process->Call(context->Global(), argc, argv);
+	if (result.IsEmpty()) 
+	{
+		String::Utf8Value error(try_catch.Exception());
+		Log(*error);
+		return false;
+	} 
+	else 
+	{
+		return true;
+	}
+}
 
 JsHttpRequestProcessor::~JsHttpRequestProcessor() 
 {

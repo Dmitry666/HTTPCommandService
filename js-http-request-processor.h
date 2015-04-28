@@ -25,6 +25,10 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+
+#ifndef JS_HTTP_REQUEST_PROCESSOR_H
+#define JS_HTTP_REQUEST_PROCESSOR_H
+
 #ifdef WITH_JAVASCRIPT
 #include <include/v8.h>
 #include <include/libplatform/libplatform.h>
@@ -63,11 +67,12 @@ public:
 
 	// Initialize this processor.  The map contains options that control
 	// how requests should be processed.
-	virtual bool Initialize(std::map<std::string, std::string>& options,
-							std::map<std::string, std::string>& output) = 0;
+	virtual bool Initialize(std::map<std::string, std::string>* options,
+							std::map<std::string, std::string>* output) = 0;
 
 	// Process a single request.
 	virtual bool Process(HttpRequest* req) = 0;
+	virtual bool Process(std::map<std::string, std::string>* arguments) = 0;
 
 	static void Log(const char* event);
 };
@@ -80,21 +85,29 @@ public:
 class JsHttpRequestProcessor : public HttpRequestProcessor
 {
 public:
+	JsHttpRequestProcessor()
+	{}
+
+#if 0
 	// Creates a new processor that processes requests by invoking the
 	// Process function of the JavaScript script given as an argument.
 	JsHttpRequestProcessor(v8::Isolate* isolate, v8::Handle<v8::String> script)
 		: isolate_(isolate)
 		, script_(script) 
 	{}
+#endif
 
 	virtual ~JsHttpRequestProcessor();
 
-	virtual bool Initialize(std::map<std::string, std::string>& options,
-							std::map<std::string, std::string>& output) override;
+	virtual bool Initialize(std::map<std::string, std::string>* options,
+							std::map<std::string, std::string>* output) override;
 
 	virtual bool Process(HttpRequest* req) override;
+	virtual bool Process(std::map<std::string, std::string>* arguments) override;
 
-private:
+	//v8::Handle<v8::Object> GetObject(const std::string& name);
+
+protected:
 	// Execute the script associated with this processor and extract the
 	// Process function.  Returns true if this succeeded, otherwise false.
 	bool ExecuteScript(v8::Handle<v8::String> script);
@@ -135,6 +148,7 @@ private:
 	v8::Isolate* isolate_;
 	v8::Handle<v8::String> script_;
 	v8::Persistent<v8::Context> context_;
+
 	v8::Persistent<v8::Function> process_;
 	static v8::Persistent<v8::ObjectTemplate> request_template_;
 	static v8::Persistent<v8::ObjectTemplate> map_template_;
@@ -168,4 +182,6 @@ private:
 	std::string host_;
 	std::string user_agent_;
 };
+
+#endif
 #endif

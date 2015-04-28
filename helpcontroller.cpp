@@ -15,13 +15,13 @@ bool HelpController::Construct()
     return true;
 }
 
-bool HelpController::Validate(const SessionId& sessionId, const ControllerArguments& arguments) const
+bool HelpController::Validate(const SessionId& sessionId, const ControllerArguments& arguments)
 {
     return true;
 }
 
 CONTROLLER_ACTIONVALIDATEIMPL(HelpController, ShowControllers, "ShowControllers", "Print all controller with their actions.")
-bool HelpController::ShowControllersValidate(const SessionId& sessionId, const ControllerArguments& arguments) const
+bool HelpController::ShowControllersValidate(const SessionId& sessionId, const ControllerArguments& arguments)
 {
     return true;
 }

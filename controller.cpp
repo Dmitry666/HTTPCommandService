@@ -39,8 +39,8 @@ __attribute__ ((init_priority (101)))
 
 void ControllerManager::RegisterController(IController* controller)
 {
+	controller->Construct();
     _controllers.insert(make_pair(ToLower(controller->ClassName()), controller));
-    controller->Construct();
     //controller->RegisterMethods();
 }
 

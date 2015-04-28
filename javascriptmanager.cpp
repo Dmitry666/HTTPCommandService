@@ -26,16 +26,16 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "javascriptmanager.h"
-
-#ifdef WITH_JAVASCRIPT
-#include "javascriptcontroller.h"
 #include "directoryinfo.h"
-
-#include <include/v8.h>
-#include <include/libplatform/libplatform.h>
-#include "js-http-request-processor.h"
 #include <assert.h>
 #include <stdio.h>
+
+#ifdef WITH_JAVASCRIPT
+#include <include/v8.h>
+#include <include/libplatform/libplatform.h>
+
+#include "javascriptcontroller.h"
+#include "js-http-request-processor.h"
 
 using namespace v8;
 using namespace std;
@@ -116,6 +116,7 @@ StringHttpRequest kSampleRequests[kSampleSize] =
 #endif
 
 JavascriptManager::JavascriptManager()
+	//: _processor(nullptr)
 {}
 
 JavascriptManager::~JavascriptManager()
@@ -128,26 +129,50 @@ void JavascriptManager::Initialize(int argc, char* argv[])
 	Platform* platform = platform::CreateDefaultPlatform();
 	V8::InitializePlatform(platform);
 	V8::Initialize();
+
+#if 0
+	_isolate = Isolate::New();
+
+	{
+		Isolate::Scope isolate_scope(_isolate);
+		HandleScope scope(_isolate);
+		Handle<String> source = ReadFile(_isolate, file);
+
+		if (source.IsEmpty()) 
+		{
+			fprintf(stderr, "Error reading '%s'.\n", file.c_str());
+			//return 1;
+		}
+
+		_processor = new JsHttpRequestProcessor(_isolate, source);
+		if (!_processor->Initialize(&_options, &_outputs)) 
+		{
+			fprintf(stderr, "Error initializing processor.\n");
+			//return 1;
+		}
+	}
 #endif
 
-	//map<string, string> options;
-	//Execute("count-hosts.js", options);
-
 	LoadScritps("./");
+#endif
 }
 
 void JavascriptManager::Shutdown()
 {
 #ifdef WITH_JAVASCRIPT
+	//delete _processor;
+	//_isolate->Dispose();
+
 	V8::Dispose();
 	V8::ShutdownPlatform();
 	//delete platform;
 #endif
 }
 
-int32 JavascriptManager::Execute(const string& file, const map<string, string>& options, map<string, string>& output)
+int32 JavascriptManager::Execute(const string& file, const map<string, string>& options, const map<string, string>& argumentsMap, map<string, string>& output)
 {
 #ifdef WITH_JAVASCRIPT
+#if 0
 	Isolate* isolate = Isolate::New();
 
 	{
@@ -162,19 +187,30 @@ int32 JavascriptManager::Execute(const string& file, const map<string, string>& 
 		}
 
 		JsHttpRequestProcessor processor(isolate, source);
-		map<string, string> o = options;
-		if (!processor.Initialize(o, output)) 
+		_options = options;
+		if (!processor.Initialize(&_options, &_outputs)) 
 		{
 			fprintf(stderr, "Error initializing processor.\n");
 			return 1;
 		}
-		if (!ProcessEntries(&processor, kSampleSize, kSampleRequests))
-			return 1;
 
+		//if (!ProcessEntries(&processor, kSampleSize, kSampleRequests))
+		//	return 1;
+
+		_outputs.clear();
+		_argumentsMap = argumentsMap;
+		if (!processor.Process(&_argumentsMap))
+		{
+			output = _outputs;
+			return 1;
+		}
+
+		output = _outputs;
 		PrintMap(output);
 	}
 
 	isolate->Dispose();
+#endif
 #endif
 
 	return 0;
@@ -195,8 +231,8 @@ void JavascriptManager::LoadScritps(const std::string& folderPath)
         {
             const std::string& path = file.GetFullPath();
 
-			JavascriptController* controller = new JavascriptController(file.GetShortName(), "javascript");
-			controller->JSRegisterMethod("Proccess", "");
+			JavascriptController* controller = new JavascriptController(file.GetShortName(), "javascript", path);
+			//controller->JSRegisterMethod("Proccess", "");
 			ControllerManager::RegisterController(controller);
 			_controllers.push_back(controller);
         }

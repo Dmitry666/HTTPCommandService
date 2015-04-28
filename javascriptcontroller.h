@@ -5,6 +5,10 @@
 
 #include "controller.h"
 
+#include <include/v8.h>
+#include <include/libplatform/libplatform.h>
+#include "js-http-request-processor.h"
+
 namespace http {
 
 	/**
@@ -14,32 +18,46 @@ namespace http {
 class JavaScriptControllerMethod : public ControllerMethod
 {
 public:
-public:
-    JavaScriptControllerMethod(const std::string& name,
-                      const std::string& description)
+    JavaScriptControllerMethod(
+		const std::string& name,
+        const std::string& description,
+		v8::Isolate* isolate,
+		v8::Handle<v8::Function>& function,
+		v8::Handle<v8::Function>& validator)
         : ControllerMethod(name, description)
+		, function_(isolate, function)
+		, validator_(isolate, validator)
     {}
 
     virtual bool IsValidateMethod() const override
     {
-		return false; // _validate ? true : false;
+		return !validator_.IsEmpty();
+			//!_validatorName.empty();
     }
 
 	virtual bool Validate(class IController* obj,
 		const SessionId& sessionId,
-		const ControllerArguments& arguments) const override;
+		const ControllerArguments& arguments) override;
 
 	virtual void Execute(class IController* obj,
 		const SessionId& sessionId,
 		const ControllerArguments& arguments,
 		ControllerOutput& contents) override;
+
+protected:
+	v8::Persistent<v8::Function> function_;
+	v8::Persistent<v8::Function> validator_;	
 };
 
-class JavascriptController : public IController
+class JavascriptController 
+	: public IController
+	, public JsHttpRequestProcessor
 {
 public:
-    JavascriptController(const std::string& name, const std::string& description)
+    JavascriptController(const std::string& name, const std::string& description, const std::string& filename)
         : IController(name, description)
+		, JsHttpRequestProcessor()
+		, _filename(filename)
     {}
 
     virtual ~JavascriptController()
@@ -49,22 +67,53 @@ public:
     virtual const char* ClassName() override {return GetName().c_str();}
 
     /**
+     * @brief Validate controller from session.
+     * @param sessionId session identificator.
+     * @return validation success.
+     */
+	virtual bool Validate(const SessionId& sessionId, const ControllerArguments& arguments) override;
+
+	bool ValidateExecute(
+            v8::Persistent<v8::Function>& validate,
+            const SessionId& sessionId,
+            const ControllerArguments& arguments);
+
+    /**
      * @brief Call action by name.
      * @param actionName controller action name.
      * @param arguments action arguments.
      * @param outContent ouput data.
      * @return is action finded.
      */
-    virtual bool ActionExecute(
-            const std::string& actionName,
+    bool ActionExecute(
+            v8::Persistent<v8::Function>& action,
             const SessionId& sessionId,
             const ControllerArguments& arguments,
-            ControllerOutput& outContent) override;
+            ControllerOutput& outContent);
 
-    void JSRegisterMethod(const std::string& name, const std::string& description)
+    void JSRegisterMethod(
+		const std::string& name, 
+		const std::string& description,
+		v8::Isolate* isolate,
+		v8::Handle<v8::Function>& function,
+		v8::Handle<v8::Function>& validator)
     {
-        RegisterMethod(new JavaScriptControllerMethod(name, description));
+        RegisterMethod(new JavaScriptControllerMethod(name, description, isolate, function, validator));
     }
+
+private:
+	v8::Handle<v8::String> ReadFile(v8::Isolate* isolate, const std::string& name);
+
+private:
+	std::string _filename;
+
+	v8::Persistent<v8::Function> validator_;
+	std::map<std::string, v8::Persistent<v8::Function>> _validators;
+	std::map<std::string, v8::Persistent<v8::Function>> _actions;
+
+	std::map<std::string, std::string> _options;
+	std::map<std::string, std::string> _argumentsMap;
+	std::map<std::string, std::string> _outputs;
 };
 
 } // End http.

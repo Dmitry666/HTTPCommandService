@@ -9,13 +9,13 @@ bool UserController::Construct()
     return true;
 }
 
-bool UserController::Validate(const SessionId& sessionId, const ControllerArguments& arguments) const
+bool UserController::Validate(const SessionId& sessionId, const ControllerArguments& arguments)
 {
     return _users.find(sessionId.Id) != _users.end();
 }
 
 CONTROLLER_ACTIONVALIDATEIMPL(UserController, Help, "Help", "Help information.")
-bool UserController::HelpValidate(const SessionId& sessionId, const ControllerArguments& arguments) const
+bool UserController::HelpValidate(const SessionId& sessionId, const ControllerArguments& arguments)
 {
     return true;
 }
@@ -26,7 +26,7 @@ void UserController::Help(const SessionId& sessionId, const ControllerArguments&
 }
 
 CONTROLLER_ACTIONVALIDATEIMPL(UserController, Login, "Login", "Authorization user.")
-bool UserController::LoginValidate(const SessionId& sessionId, const ControllerArguments& arguments) const
+bool UserController::LoginValidate(const SessionId& sessionId, const ControllerArguments& arguments)
 {
     return true;
 }

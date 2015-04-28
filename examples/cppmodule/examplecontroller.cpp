@@ -9,13 +9,13 @@ bool ExampleController::Construct()
     return true;
 }
 
-bool ExampleController::Validate(const SessionId& sessionId, const ControllerArguments& arguments) const
+bool ExampleController::Validate(const SessionId& sessionId, const ControllerArguments& arguments)
 {
     return true;
 }
 
 CONTROLLER_ACTIONVALIDATEIMPL(ExampleController, DoAction, "DoAction", "Example action.")
-bool ExampleController::DoActionValidate(const SessionId& sessionId, const ControllerArguments& arguments) const
+bool ExampleController::DoActionValidate(const SessionId& sessionId, const ControllerArguments& arguments)
 {
     return true;
 }

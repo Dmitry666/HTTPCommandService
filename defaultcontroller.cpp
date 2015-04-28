@@ -11,13 +11,13 @@ bool DefaultController::Construct()
     return true;
 }
 
-bool DefaultController::Validate(const SessionId& sessionId, const ControllerArguments& arguments) const
+bool DefaultController::Validate(const SessionId& sessionId, const ControllerArguments& arguments) 
 {
     return true;
 }
 
 CONTROLLER_ACTIONVALIDATEIMPL(DefaultController, Test, "Test", "Action from test.")
-bool DefaultController::TestValidate(const SessionId& sessionId, const ControllerArguments& arguments) const
+bool DefaultController::TestValidate(const SessionId& sessionId, const ControllerArguments& arguments)
 {
     return true;
 }
