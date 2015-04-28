@@ -7,7 +7,7 @@
 using namespace http;
 
 std::string _address = "0.0.0.0";
-std::string _port = "80";
+std::string _port = "10000";
 std::string _root = "./";
 
 int main(int argc, char* argv[])
@@ -27,6 +27,7 @@ int main(int argc, char* argv[])
         //return 1;
     }
 
+	std::cout << "Start HTTP Service: " << _address << ":" << _port << ", " << _root;
     HttpService service(_address, _port, _root);
     service.Start();
     service.Join();

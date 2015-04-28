@@ -1,0 +1,57 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HTTPCommandService", "HTTPCommandService.vcxproj", "{3A0E47AB-EE05-4671-A9AA-88862F8EF27A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{394C673A-7B10-4EF3-A1ED-FBC26B8564BE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HTTPCommandServer", "HTTPCommandServer.vcxproj", "{FF1922B0-9110-4F4E-A9A5-7C2F4A1B4343}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3A0E47AB-EE05-4671-A9AA-88862F8EF27A} = {3A0E47AB-EE05-4671-A9AA-88862F8EF27A}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExampleAuthorization", "..\examples\authorization\ExampleAuthorization.vcxproj", "{9023017B-CCBA-44C8-99FA-1DD2C0F47A9D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3A0E47AB-EE05-4671-A9AA-88862F8EF27A} = {3A0E47AB-EE05-4671-A9AA-88862F8EF27A}
+		{FF1922B0-9110-4F4E-A9A5-7C2F4A1B4343} = {FF1922B0-9110-4F4E-A9A5-7C2F4A1B4343}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExampleCppModule", "..\examples\cppmodule\ExampleCppModule.vcxproj", "{30C27AD4-3168-41F0-80D0-2B300D050D7C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3A0E47AB-EE05-4671-A9AA-88862F8EF27A} = {3A0E47AB-EE05-4671-A9AA-88862F8EF27A}
+		{FF1922B0-9110-4F4E-A9A5-7C2F4A1B4343} = {FF1922B0-9110-4F4E-A9A5-7C2F4A1B4343}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3A0E47AB-EE05-4671-A9AA-88862F8EF27A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3A0E47AB-EE05-4671-A9AA-88862F8EF27A}.Debug|Win32.Build.0 = Debug|Win32
+		{3A0E47AB-EE05-4671-A9AA-88862F8EF27A}.Release|Win32.ActiveCfg = Release|Win32
+		{3A0E47AB-EE05-4671-A9AA-88862F8EF27A}.Release|Win32.Build.0 = Release|Win32
+		{FF1922B0-9110-4F4E-A9A5-7C2F4A1B4343}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FF1922B0-9110-4F4E-A9A5-7C2F4A1B4343}.Debug|Win32.Build.0 = Debug|Win32
+		{FF1922B0-9110-4F4E-A9A5-7C2F4A1B4343}.Release|Win32.ActiveCfg = Release|Win32
+		{FF1922B0-9110-4F4E-A9A5-7C2F4A1B4343}.Release|Win32.Build.0 = Release|Win32
+		{9023017B-CCBA-44C8-99FA-1DD2C0F47A9D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9023017B-CCBA-44C8-99FA-1DD2C0F47A9D}.Debug|Win32.Build.0 = Debug|Win32
+		{9023017B-CCBA-44C8-99FA-1DD2C0F47A9D}.Release|Win32.ActiveCfg = Release|Win32
+		{9023017B-CCBA-44C8-99FA-1DD2C0F47A9D}.Release|Win32.Build.0 = Release|Win32
+		{30C27AD4-3168-41F0-80D0-2B300D050D7C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{30C27AD4-3168-41F0-80D0-2B300D050D7C}.Debug|Win32.Build.0 = Debug|Win32
+		{30C27AD4-3168-41F0-80D0-2B300D050D7C}.Release|Win32.ActiveCfg = Release|Win32
+		{30C27AD4-3168-41F0-80D0-2B300D050D7C}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9023017B-CCBA-44C8-99FA-1DD2C0F47A9D} = {394C673A-7B10-4EF3-A1ED-FBC26B8564BE}
+		{30C27AD4-3168-41F0-80D0-2B300D050D7C} = {394C673A-7B10-4EF3-A1ED-FBC26B8564BE}
+	EndGlobalSection
+EndGlobal

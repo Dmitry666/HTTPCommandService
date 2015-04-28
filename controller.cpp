@@ -55,6 +55,11 @@ IController* ControllerManager::FindController(const string& name)
     return nullptr;
 }
 
+const std::map<std::string, IController*>& ControllerManager::GetControllers() 
+{
+	return _controllers;
+}
+
 //ControllerManager& ControllerManager::Instance()
 //{}
 

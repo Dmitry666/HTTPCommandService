@@ -18,5 +18,15 @@
 
 typedef int32_t int32;
 
+#ifdef _MSC_VER
+#ifdef __COMPILING_HCORE
+#define HCORE_API __declspec(dllexport)
+#else
+#define HCORE_API __declspec(dllimport)
+#endif
+#else
+#define HCORE_API
+#endif
+
 #endif // COMMON
 

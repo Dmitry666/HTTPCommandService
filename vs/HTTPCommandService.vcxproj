@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{3A0E47AB-EE05-4671-A9AA-88862F8EF27A}</ProjectGuid>
+    <RootNamespace>HTTPCommandService</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="boost.props" />
+    <Import Project="jsoncpp.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="boost.props" />
+    <Import Project="jsoncpp.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WITH_COOKIE;WITH_JSONCPP;WITH_CTPP;_WIN32_WINDOWS;CRT_SECURE_NO_WARNINGS;BOOST_ASIO_HAS_MOVE;__COMPILING_HCORE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>jsoncpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WITH_COOKIE;WITH_JSONCPP;WITH_CTPP;_WIN32_WINDOWS;CRT_SECURE_NO_WARNINGS;BOOST_ASIO_HAS_MOVE;__COMPILING_HCORE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>jsoncpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\common-private.h" />
+    <ClInclude Include="..\common.h" />
+    <ClInclude Include="..\connection.hpp" />
+    <ClInclude Include="..\connection_manager.hpp" />
+    <ClInclude Include="..\controller.h" />
+    <ClInclude Include="..\defaultcontroller.h" />
+    <ClInclude Include="..\delegate.h" />
+    <ClInclude Include="..\directoryinfo.h" />
+    <ClInclude Include="..\fileinfo.h" />
+    <ClInclude Include="..\header.hpp" />
+    <ClInclude Include="..\helpcontroller.h" />
+    <ClInclude Include="..\httpservice.h" />
+    <ClInclude Include="..\javascriptcontroller.h" />
+    <ClInclude Include="..\javascriptmanager.h" />
+    <ClInclude Include="..\mime_types.hpp" />
+    <ClInclude Include="..\module.h" />
+    <ClInclude Include="..\modulemanager.h" />
+    <ClInclude Include="..\reply.hpp" />
+    <ClInclude Include="..\request.hpp" />
+    <ClInclude Include="..\request_handler.hpp" />
+    <ClInclude Include="..\request_parser.hpp" />
+    <ClInclude Include="..\server.hpp" />
+    <ClInclude Include="..\sessionmanager.h" />
+    <ClInclude Include="..\sslconnection.hpp" />
+    <ClInclude Include="..\sslserver.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\connection.cpp" />
+    <ClCompile Include="..\connection_manager.cpp" />
+    <ClCompile Include="..\controller.cpp" />
+    <ClCompile Include="..\defaultcontroller.cpp" />
+    <ClCompile Include="..\directoryinfo.cpp" />
+    <ClCompile Include="..\fileinfo.cpp" />
+    <ClCompile Include="..\helpcontroller.cpp" />
+    <ClCompile Include="..\httpservice.cpp" />
+    <ClCompile Include="..\javascriptcontroller.cpp" />
+    <ClCompile Include="..\javascriptmanager.cpp" />
+    <ClCompile Include="..\mime_types.cpp" />
+    <ClCompile Include="..\modulemanager.cpp" />
+    <ClCompile Include="..\reply.cpp" />
+    <ClCompile Include="..\request_handler.cpp" />
+    <ClCompile Include="..\request_parser.cpp" />
+    <ClCompile Include="..\server.cpp" />
+    <ClCompile Include="..\sessionmanager.cpp" />
+    <ClCompile Include="..\sslconnection.cpp" />
+    <ClCompile Include="..\sslserver.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -302,14 +302,14 @@ public:
      * @param name method name.
      * @return method.
      */
-    virtual ControllerMethodRef FindMethod(const std::string& name);
+    HCORE_API virtual ControllerMethodRef FindMethod(const std::string& name);
 
     /**
      * @brief Register new method.
      * @param name method name.
      * @param method method.
      */
-    void RegisterMethod(ControllerMethodRef method);
+    HCORE_API void RegisterMethod(ControllerMethodRef method);
 
     template<typename ClassType>
     void TRegisterMethod(const std::string& name,
@@ -367,20 +367,20 @@ public:
      * @brief Add new controller.
      * @param controller controller pointer.
      */
-    static void RegisterController(IController* controller);
+    HCORE_API static void RegisterController(IController* controller);
 
     /**
      * @brief Find controller by name.
      * @param name controller name.
      * @return controller pointer.
      */
-    static IController* FindController(const std::string& name);
+    HCORE_API static IController* FindController(const std::string& name);
 
     /**
      * @brief Get all controllers.
      * @return Controllers map.
      */
-    static const std::map<std::string, IController*>& GetControllers() {return _controllers;}
+	HCORE_API static const std::map<std::string, IController*>& GetControllers();
 
 private:
     //static ControllerManager& Instance();
