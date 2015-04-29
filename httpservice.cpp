@@ -31,14 +31,19 @@ http::server::server* _s;
 
 namespace http {
 
-HttpService::HttpService(int argc, char* argv[])
+HttpService::HttpService(const HttpServiceArguments& arguments)
+	: _arguments(arguments)
 {
     ModuleManager::Instance().LoadModulesFromFolder("./");
-    ModuleManager::Instance().LoadModulesFromFolder(_rootDir);
+
+	const std::string rootDir = _arguments["root"];
+	ModuleManager::Instance().LoadModulesFromFolder(rootDir.empty() ? "./modules" : rootDir);
+
 
     ModuleManager::Instance().InitializeAll();
 #ifdef WITH_JAVASCRIPT
-	JavascriptManager::Instance().Initialize(argc, argv);
+	const std::string jsPath = _arguments["js"];
+	JavascriptManager::Instance().Initialize(jsPath.empty() ? "./js" : jsPath);
 #endif
 }
 
@@ -50,13 +55,10 @@ HttpService::~HttpService()
     ModuleManager::Instance().ShutdownAll();
 }
 
-bool HttpService::Start(const std::string& address,
-        const std::string& port,
-        const std::string& root)
+bool HttpService::Start(const std::string& address, const std::string& port)
 {
 	_address = address;
 	_port = port;
-	_rootDir = root;
 
     _thread = std::thread(&HttpService::Run, this);
     return true;
@@ -79,7 +81,7 @@ void HttpService::Run()
     try
     {
         // Initialise the server.
-        _s = new server::server(_address, _port, _rootDir);
+        _s = new server::server(_address, _port, _arguments["root"]);
 
         // Run the server until stopped.
         _s->run();

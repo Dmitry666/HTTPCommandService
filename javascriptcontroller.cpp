@@ -141,7 +141,9 @@ bool JavascriptController::Load()
 			}
 			else
 			{
-				fprintf(stderr, "Error not found validator.\n");
+				fprintf(stderr, "Error not found validator '%s':'%s'.\n", 
+					_name.c_str(), 
+					validator.c_str());
 			}
 
 		}
@@ -178,7 +180,9 @@ bool JavascriptController::Load()
 				}
 				else
 				{
-					fprintf(stderr, "Error not found action.\n");
+					fprintf(stderr, "Error not found action '%s':'%s'.\n", 
+						_name.c_str(), 
+						action_name.c_str());
 				}
 
 				// If exist validator.
@@ -193,7 +197,10 @@ bool JavascriptController::Load()
 					}
 					else
 					{
-						fprintf(stderr, "Error not found validator.\n");
+						fprintf(stderr, "Error not found validator '%s':'%s' from action '%s'.\n",
+							_name.c_str(),
+							action_validator.c_str(), 
+							action_name.c_str());
 					}
 				}
 				

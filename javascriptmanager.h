@@ -9,13 +9,27 @@
 
 namespace http {
 
+/**
+ * @brief Javascript controller manager.
+ *
+ * Initialize v8 engine. Search and load javascript controllers.
+ */
 class JavascriptManager
 {
-public:
+private:
 	JavascriptManager();
 	~JavascriptManager();
 
-	void Initialize(int argc, char* argv[]);
+public:
+	/**
+	 * @brief Initialize js by path.
+	 * @param path directory with js files.
+	 */
+	void Initialize(const std::string& path);
+
+	/**
+	 * @brief Shutdown all controllers.
+	 */
 	void Shutdown();
 
 	int32 Execute(
@@ -24,6 +38,9 @@ public:
 		const std::map<std::string, std::string>& argumentsMap, 
 		std::map<std::string, std::string>& output);
 
+	/**
+	 * @brief Singleton instance.
+	 */
 	static JavascriptManager& Instance();
 
 private:

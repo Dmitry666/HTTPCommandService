@@ -117,37 +117,15 @@ JavascriptManager::JavascriptManager()
 JavascriptManager::~JavascriptManager()
 {}
 
-void JavascriptManager::Initialize(int argc, char* argv[])
+void JavascriptManager::Initialize(const std::string& path)
 {
 	V8::InitializeICU();
 	Platform* platform = platform::CreateDefaultPlatform();
 	V8::InitializePlatform(platform);
 	V8::Initialize();
 
-#if 0
-	_isolate = Isolate::New();
-
-	{
-		Isolate::Scope isolate_scope(_isolate);
-		HandleScope scope(_isolate);
-		Handle<String> source = ReadFile(_isolate, file);
-
-		if (source.IsEmpty()) 
-		{
-			fprintf(stderr, "Error reading '%s'.\n", file.c_str());
-			//return 1;
-		}
-
-		_processor = new JsHttpRequestProcessor(_isolate, source);
-		if (!_processor->Initialize(&_options, &_outputs)) 
-		{
-			fprintf(stderr, "Error initializing processor.\n");
-			//return 1;
-		}
-	}
-#endif
-
 	LoadScritps("./");
+	LoadScritps(path);	
 }
 
 void JavascriptManager::Shutdown()

@@ -65,7 +65,8 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WITH_COOKIE;WITH_JSONCPP;WITH_CTPP;_WIN32_WINDOWS;CRT_SECURE_NO_WARNINGS;BOOST_ASIO_HAS_MOVE;__COMPILING_HCORE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WITH_COOKIE;WITH_JAVASCRIPT;WITH_CTPP;_WIN32_WINDOWS;_CRT_SECURE_NO_WARNINGS;BOOST_ASIO_HAS_MOVE;__COMPILING_HCORE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
