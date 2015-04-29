@@ -102,10 +102,15 @@ public:
     }
 
 private:
+	bool Load();
+	void UnLoad();
+	bool IsModified();
+
 	v8::Handle<v8::String> ReadFile(v8::Isolate* isolate, const std::string& name);
 
 private:
 	std::string _filename;
+	time_t _lastModifyTime;
 
 	v8::Persistent<v8::Function> validator_;
 	std::map<std::string, v8::Persistent<v8::Function>> _validators;

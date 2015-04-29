@@ -120,6 +120,7 @@ public:
     const std::string& GetFullPath() const {return _path;}
 
     // Static methods.
+	static time_t LastModifiedTime(const std::string& path);
     static bool IsExist(const std::string& path);
 
 protected:

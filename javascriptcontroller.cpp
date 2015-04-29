@@ -1,5 +1,6 @@
 #include "javascriptcontroller.h"
 #include "javascriptmanager.h"
+#include "fileinfo.h"
 
 #ifdef WITH_JAVASCRIPT
 
@@ -57,25 +58,14 @@ void JavaScriptControllerMethod::Execute(class IController* obj,
 {
     JavascriptController* class_ = static_cast<JavascriptController*>(obj);
 	class_->ActionExecute(function_, sessionId, arguments, outContent);
-
-#if 0
-	map<string, string> options;
-	map<string, string> argumentsMap;
-	map<string, string> output;
-
-	_argumentsMap = arguments.ToArgumentMap();
-	int32 result = JavascriptManager::Instance().Execute(class_->GetName() + ".js", options, arguments, output);
-
-	outContent.append( "Result: " + std::to_string(result) + "\n" );
-
-	for(auto& pair : output)
-	{
-		outContent.append( "\t" + pair.first + ": " + pair.second + "\n" );
-	}
-#endif
 }
 
 bool JavascriptController::Construct()
+{
+	return Load();
+}
+
+bool JavascriptController::Load()
 {
 	isolate_ = Isolate::New();
 
@@ -174,9 +164,7 @@ bool JavascriptController::Construct()
 				std::string action_name = JSValue::GetString(action_object, "name");
 				std::string action_description = JSValue::GetString(action_object, "description");
 				std::string action_validator = JSValue::GetString(action_object, "validator");
-
-
-				
+			
 				Handle<Function> action_fun;
 				Handle<Function> validator_fun;
 
@@ -187,10 +175,6 @@ bool JavascriptController::Construct()
 				if (function_val->IsFunction()) 
 				{
 					action_fun = Handle<Function>::Cast(function_val);
-
-					//v8::Persistent<v8::Function> function;
-					//function.Reset(GetIsolate(), function_fun);
-					//_actions.insert(std::make_pair(function_name, function));
 				}
 				else
 				{
@@ -200,16 +184,12 @@ bool JavascriptController::Construct()
 				// If exist validator.
 				if(!action_validator.empty())
 				{
-					Handle<String> validator_name = String::NewFromUtf8(GetIsolate(), validator.c_str());
+					Handle<String> validator_name = String::NewFromUtf8(GetIsolate(), action_validator.c_str());
 					Handle<Value> validator_val = context->Global()->Get(validator_name);
 
 					if (validator_val->IsFunction()) 
 					{
 						validator_fun = Handle<Function>::Cast(validator_val);
-
-						//v8::Persistent<v8::Function> validator;
-						//validator.Reset(GetIsolate(), validator_fun);
-						//_validators.insert(std::make_pair(action_validator, validator));
 					}
 					else
 					{
@@ -222,7 +202,22 @@ bool JavascriptController::Construct()
 		}
 	}
 
+	auto time = FileInfo::LastModifiedTime(_filename);
     return true;
+}
+
+
+void JavascriptController::UnLoad()
+{
+}
+
+bool JavascriptController::IsModified()
+{
+	auto time = FileInfo::LastModifiedTime(_filename);
+	if (time == 0)
+		return false;
+
+	return _lastModifyTime != time;
 }
 
 bool JavascriptController::Validate(const SessionId& sessionId, const ControllerArguments& arguments) 
@@ -262,12 +257,15 @@ bool JavascriptController::Validate(const SessionId& sessionId, const Controller
 		Log(*error);
 		return false;
 	} 
-	else 
+
+	if (!result->IsBoolean())
 	{
-		return true;
+		Log("Validator result not boolean.");
+		return false;
 	}
 
-	return true;
+	Handle<Boolean> validated = Handle<Boolean>::Cast(result);
+	return validated->BooleanValue();
 }
 
 bool JavascriptController::ValidateExecute(
@@ -310,12 +308,15 @@ bool JavascriptController::ValidateExecute(
 		Log(*error);
 		return false;
 	} 
-	else 
+
+	if (!result->IsBoolean())
 	{
-		return true;
+		Log("Validator result not boolean.");
+		return false;
 	}
 
-	return true;
+	Handle<Boolean> validated = Handle<Boolean>::Cast(result);
+	return validated->BooleanValue();
 }
 
 bool JavascriptController::ActionExecute(
@@ -349,42 +350,23 @@ bool JavascriptController::ActionExecute(
 	// and one argument, the request.
 	const int argc = 1;
 	Handle<Value> argv[argc] = { request_obj };
-	v8::Local<v8::Function> validator =
+	v8::Local<v8::Function> action =
 		v8::Local<v8::Function>::New(GetIsolate(), action_per);
 
-	Handle<Value> result = validator->Call(context->Global(), argc, argv);
+	Handle<Value> result = action->Call(context->Global(), argc, argv);
 	if (result.IsEmpty()) 
 	{
 		String::Utf8Value error(try_catch.Exception());
 		Log(*error);
 		return false;
 	} 
-	else 
-	{
-		return true;
-	}
 
-#if 0
-	Isolate::Scope isolate_scope(isolate_);
-	HandleScope scope(isolate_);
-
-	_argumentsMap = arguments.ToArgumentMap();
-	_outputs.clear();
-	//int32 result = JavascriptManager::Instance().Execute(_filename, options, arguments, output);
-
-	if (!this->Process(&_argumentsMap))
-	{
-		outContent.append( "JS Error.\n" );
-		return false;
-	}
-#endif
 	outContent.append( "Result: OK\n" );
 
 	for(auto& pair : _outputs)
 	{
 		outContent.append( "\t" + pair.first + ": " + pair.second + "\n" );
 	}
-
 
 	return true;
 }
