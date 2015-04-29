@@ -1,5 +1,7 @@
 #include "controller.h"
 #include <algorithm>
+#include "service-config.h"
+
 
 using namespace std;
 
@@ -11,6 +13,15 @@ string ToLower(const string& text)
     transform(textLower.begin(), textLower.end(), textLower.begin(), ::tolower);
     return textLower;
 }
+
+IController::IController(const string& name, const string& description)
+    : _name(name)
+    , _description(description)
+	, _enable(true)
+{
+	_enable = ServiceConfig::Instance().GetBoolean(_name, "enable", true);
+}
+
 
 ControllerMethodRef IController::FindMethod(const string& name)
 {
@@ -49,7 +60,20 @@ IController* ControllerManager::FindController(const string& name)
     auto it = _controllers.find(ToLower(name));
     if(it != _controllers.end())
     {
-        return it->second;
+		IController* controller = it->second;
+        return controller->IsEnable() ? controller : nullptr;
+    }
+
+    return nullptr;
+}
+
+IController* ControllerManager::GetController(const std::string& name)
+{
+    auto it = _controllers.find(ToLower(name));
+    if(it != _controllers.end())
+    {
+		IController* controller = it->second;
+        return controller;
     }
 
     return nullptr;

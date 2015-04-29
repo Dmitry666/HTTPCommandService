@@ -227,6 +227,23 @@ bool JavascriptController::IsModified()
 	return _lastModifyTime != time;
 }
 
+bool JavascriptController::BeginAction()
+{
+	if(IsModified())
+	{
+		// Reload.
+		// UnLoad();
+		// Load();
+	}
+
+	return true;
+}
+
+bool JavascriptController::EndAction()
+{
+	return true;
+}
+
 bool JavascriptController::Validate(const SessionId& sessionId, const ControllerArguments& arguments) 
 {
 	Isolate::Scope isolate_scope(isolate_);
@@ -367,6 +384,13 @@ bool JavascriptController::ActionExecute(
 		Log(*error);
 		return false;
 	} 
+
+	auto it = _outputs.find("body");
+	if(it != _outputs.end())
+	{
+		outContent.append(it->second);
+		return true;
+	}
 
 	outContent.append( "Result: OK\n" );
 

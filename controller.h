@@ -292,13 +292,22 @@ class IController
     //typedef std::function<void(const IController&, const std::vector<std::string>&, std::string&)> ControllerMethod;
 
 public:
-    IController(const std::string& name, const std::string& description)
-        : _name(name)
-        , _description(description)
-    {}
+	HCORE_API IController(const std::string& name, const std::string& description);
+	virtual ~IController()
+	{}
 
     virtual bool Construct() = 0;
     virtual const char* ClassName() = 0;
+
+	virtual bool BeginAction()
+	{
+		return true;
+	}
+
+	virtual bool EndAction()
+	{
+		return true;
+	}
 
     /**
      * @brief Validate controller from session.
@@ -367,10 +376,15 @@ public:
     const std::string& GetDescription() const {return _description;}
     const std::map<std::string, ControllerMethodRef>& GetActions() const {return _methods;}
 
+	bool IsEnable() const { return _enable; }
+
 protected:
     std::string _name;
     std::string _description;
     std::map<std::string, ControllerMethodRef> _methods;
+
+	//
+	bool _enable;
 };
 
 /**
@@ -397,6 +411,15 @@ public:
      * @return Controllers map.
      */
 	HCORE_API static const std::map<std::string, IController*>& GetControllers();
+
+	HCORE_API static IController* GetController(const std::string& name);
+
+	template<typename ClassType>
+	static IController* Get()
+	{
+		return GetController(ClassType::GetClassNameStatic());
+	}
+	
 
 private:
     //static ControllerManager& Instance();
@@ -429,7 +452,7 @@ public:
                      bool(ClassType:: *validate)(const SessionId&, const ControllerArguments&) = nullptr
                      )
     {
-        IController* controller = ControllerManager::FindController(ClassType::GetClassNameStatic());
+        IController* controller = ControllerManager::Get<ClassType>();
         controller->TRegisterMethod(name, description, function, validate);
     }
 };

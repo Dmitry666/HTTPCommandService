@@ -84,18 +84,22 @@ void HelpController::ShowControllersText(const SessionId& sessionId, const Contr
 
     for(auto& controllerPair : ControllerManager::GetControllers())
     {
-        outContent.append("\t" +
-                       controllerPair.second->GetName() + " - " +
-                       controllerPair.second->GetDescription() +
-                       "\n");
+		IController* controller = controllerPair.second;
+		if(controller->IsEnable())
+		{
+			outContent.append("\t" +
+						   controller->GetName() + " - " +
+						   controller->GetDescription() +
+						   "\n");
 
-        for(auto& actionPair : controllerPair.second->GetActions())
-        {
-            outContent.append("\t\t" +
-                           actionPair.second->GetName() + " - " +
-                           actionPair.second->GetDescription() +
-                           "\n");
-        }
+			for(auto& actionPair : controller->GetActions())
+			{
+				outContent.append("\t\t" +
+							   actionPair.second->GetName() + " - " +
+							   actionPair.second->GetDescription() +
+							   "\n");
+			}
+		}
     }
 }
 
@@ -121,25 +125,29 @@ void HelpController::ShowControllersJSON(const SessionId& sessionId, const Contr
 
     for(auto& controllerPair : ControllerManager::GetControllers())
     {
-        Json::Value controllerValue;
+		IController* controller = controllerPair.second;
+		if(controller->IsEnable())
+		{
+			Json::Value controllerValue;
 
-        Json::Value actionsValue(Json::arrayValue);
+			Json::Value actionsValue(Json::arrayValue);
 
-        for(auto& actionPair : controllerPair.second->GetActions())
-        {
-            Json::Value actionValue;
-            actionValue["name"] =  actionPair.second->GetName();
-            actionValue["description"] =  actionPair.second->GetDescription();
+			for(auto& actionPair : controller->GetActions())
+			{
+				Json::Value actionValue;
+				actionValue["name"] =  actionPair.second->GetName();
+				actionValue["description"] =  actionPair.second->GetDescription();
 
-            actionsValue.append(actionValue);
-        }
+				actionsValue.append(actionValue);
+			}
 
-        controllerValue["name"] = controllerPair.second->GetName();
-        controllerValue["description"] = controllerPair.second->GetDescription();
-        controllerValue["actions"] = actionsValue;
+			controllerValue["name"] = controllerPair.second->GetName();
+			controllerValue["description"] = controllerPair.second->GetDescription();
+			controllerValue["actions"] = actionsValue;
 
-        controllersValue[controllerPair.second->GetName()] = controllerValue;
-        //controllersValue.append(controllerValue);
+			controllersValue[controller->GetName()] = controllerValue;
+			//controllersValue.append(controllerValue);
+		}
     }
 
     const std::string jsonText = controllersValue.toStyledString();

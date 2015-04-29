@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HTTPCommandService", "HTTPCommandService.vcxproj", "{3A0E47AB-EE05-4671-A9AA-88862F8EF27A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2D5A7976-4CE4-4F05-89B7-E04C34D57E88} = {2D5A7976-4CE4-4F05-89B7-E04C34D57E88}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{394C673A-7B10-4EF3-A1ED-FBC26B8564BE}"
 EndProject
@@ -25,6 +28,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExampleCppModule", "..\exam
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HTTPCommandExtension", "HTTPCommandExtension.vcxproj", "{9746E081-9D9D-4933-9FA5-6FB4D55CD955}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "third_party", "third_party", "{2E7710CB-39BA-4D66-91EE-472A753F7EED}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "inih", "..\third_party\inih\inih.vcxproj", "{2D5A7976-4CE4-4F05-89B7-E04C34D57E88}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,6 +59,10 @@ Global
 		{9746E081-9D9D-4933-9FA5-6FB4D55CD955}.Debug|Win32.Build.0 = Debug|Win32
 		{9746E081-9D9D-4933-9FA5-6FB4D55CD955}.Release|Win32.ActiveCfg = Release|Win32
 		{9746E081-9D9D-4933-9FA5-6FB4D55CD955}.Release|Win32.Build.0 = Release|Win32
+		{2D5A7976-4CE4-4F05-89B7-E04C34D57E88}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2D5A7976-4CE4-4F05-89B7-E04C34D57E88}.Debug|Win32.Build.0 = Debug|Win32
+		{2D5A7976-4CE4-4F05-89B7-E04C34D57E88}.Release|Win32.ActiveCfg = Release|Win32
+		{2D5A7976-4CE4-4F05-89B7-E04C34D57E88}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -59,5 +70,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{9023017B-CCBA-44C8-99FA-1DD2C0F47A9D} = {394C673A-7B10-4EF3-A1ED-FBC26B8564BE}
 		{30C27AD4-3168-41F0-80D0-2B300D050D7C} = {394C673A-7B10-4EF3-A1ED-FBC26B8564BE}
+		{2D5A7976-4CE4-4F05-89B7-E04C34D57E88} = {2E7710CB-39BA-4D66-91EE-472A753F7EED}
 	EndGlobalSection
 EndGlobal

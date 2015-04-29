@@ -82,6 +82,9 @@ public:
 	virtual bool Construct() override;
     virtual const char* ClassName() override {return GetName().c_str();}
 
+	virtual bool BeginAction() override;
+	virtual bool EndAction() override;
+
     /**
      * @brief Validate controller from session.
      * @param sessionId session identificator.

@@ -118,6 +118,12 @@ void request_handler::handle_request(const request& req, reply& rep)
         return;
     }
 
+	if( !icontroller->BeginAction() )
+	{
+		rep = reply::stock_reply(reply::not_found);
+        return;
+	}
+
     ControllerMethodRef methodRef = icontroller->FindMethod(commandName);
     if( methodRef == nullptr )
     {
@@ -158,6 +164,8 @@ void request_handler::handle_request(const request& req, reply& rep)
     }
 
     (*methodRef)(icontroller, sessionId, argumentsMap, rep.content);
+
+	icontroller->EndAction();
     /*
     // Determine the file extension.
     std::size_t last_slash_pos = request_path.find_last_of("/");
