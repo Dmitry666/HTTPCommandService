@@ -12,7 +12,24 @@
 #define HTTP_SERVER_HPP
 
 #include "common-private.h"
+
+#ifndef _MSC_VER
+// save diagnostic state
+#pragma GCC diagnostic push
+// turn off the specific warning. Can also use "-Wall"
+#pragma GCC diagnostic ignored "-Wall"
+//#pragma GCC diagnostic ignored "-Wunused-variable"
+//#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#define BOOST_CONFIG_WARNING_DISABLE_HPP
+#pragma GCC system_header
+#endif
+
 #include <boost/asio.hpp>
+
+#ifndef _MSC_VER
+#pragma GCC diagnostic pop
+#endif
+
 #include <string>
 #include "connection.hpp"
 #include "connection_manager.hpp"

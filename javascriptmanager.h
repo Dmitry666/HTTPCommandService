@@ -6,7 +6,6 @@
 #ifdef WITH_JAVASCRIPT
 #include <include/v8.h>
 #include <include/libplatform/libplatform.h>
-#endif
 
 namespace http {
 
@@ -36,11 +35,10 @@ private:
 	std::map<std::string, std::string> _argumentsMap;
 	std::map<std::string, std::string> _outputs;
 
-#ifdef WITH_JAVASCRIPT
 	v8::Isolate* _isolate;
-#endif
 };
 
 } // End http.
 
+#endif
 #endif // JAVASCRIPTMANAGER_H

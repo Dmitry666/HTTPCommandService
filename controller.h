@@ -296,6 +296,8 @@ public:
      */
     virtual bool Validate(const SessionId& sessionId, const ControllerArguments& arguments)
     {
+        UNUSED(sessionId)
+        UNUSED(arguments)
         return true;
     }
 

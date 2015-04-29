@@ -14,7 +14,24 @@
 #include "common-private.h"
 #include <array>
 #include <memory>
+
+#ifndef _MSC_VER
+// save diagnostic state
+#pragma GCC diagnostic push
+// turn off the specific warning. Can also use "-Wall"
+#pragma GCC diagnostic ignored "-Wall"
+//#pragma GCC diagnostic ignored "-Wunused-variable"
+//#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#define BOOST_CONFIG_WARNING_DISABLE_HPP
+#pragma GCC system_header
+#endif
+
 #include <boost/asio.hpp>
+
+#ifndef _MSC_VER
+#pragma GCC diagnostic pop
+#endif
+
 #include "reply.hpp"
 #include "request.hpp"
 #include "request_handler.hpp"
@@ -34,7 +51,7 @@ public:
     connection& operator=(const connection&) = delete;
 
     /// Construct a connection with the given socket.
-    explicit connection(boost::asio::ip::tcp::socket& socket,
+    explicit connection(boost::asio::ip::tcp::socket socket,
       connection_manager& manager, request_handler& handler);
 
     /// Start the first asynchronous operation for the connection.

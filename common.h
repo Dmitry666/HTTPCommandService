@@ -28,5 +28,10 @@ typedef int32_t int32;
 #define HCORE_API
 #endif
 
+#ifndef UNUSED
+#define UNUSED(x) (void)x;
+#endif
+
+
 #endif // COMMON
 

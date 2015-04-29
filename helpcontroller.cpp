@@ -17,12 +17,18 @@ bool HelpController::Construct()
 
 bool HelpController::Validate(const SessionId& sessionId, const ControllerArguments& arguments)
 {
+    UNUSED(sessionId)
+    UNUSED(arguments)
+
     return true;
 }
 
 CONTROLLER_ACTIONVALIDATEIMPL(HelpController, ShowControllers, "ShowControllers", "Print all controller with their actions.")
 bool HelpController::ShowControllersValidate(const SessionId& sessionId, const ControllerArguments& arguments)
 {
+    UNUSED(sessionId)
+    UNUSED(arguments)
+
     return true;
 }
 
@@ -71,6 +77,9 @@ void HelpController::ShowControllers(const SessionId& sessionId, const Controlle
 
 void HelpController::ShowControllersText(const SessionId& sessionId, const ControllerArguments& arguments, ControllerOutput& outContent)
 {
+    //UNUSED(sessionId)
+    //UNUSED(arguments)
+
     outContent.append("Controllers:\n\n");
 
     for(auto& controllerPair : ControllerManager::GetControllers())
@@ -92,6 +101,9 @@ void HelpController::ShowControllersText(const SessionId& sessionId, const Contr
 
 void HelpController::ShowControllersHTML(const SessionId& sessionId, const ControllerArguments& arguments, ControllerOutput& outContent)
 {
+    UNUSED(sessionId)
+    UNUSED(arguments)
+
 #ifdef WITH_CTPP
     outContent.append("Format html don't sapport\n");
 #else
@@ -101,6 +113,9 @@ void HelpController::ShowControllersHTML(const SessionId& sessionId, const Contr
 
 void HelpController::ShowControllersJSON(const SessionId& sessionId, const ControllerArguments& arguments, ControllerOutput& outContent)
 {
+    UNUSED(sessionId)
+    UNUSED(arguments)
+
 #ifdef WITH_JSONCPP
     Json::Value controllersValue;
 
@@ -136,6 +151,9 @@ void HelpController::ShowControllersJSON(const SessionId& sessionId, const Contr
 
 void HelpController::ShowControllersXML(const SessionId& sessionId, const ControllerArguments& arguments, ControllerOutput& outContent)
 {
+    UNUSED(sessionId)
+    UNUSED(arguments)
+
 #ifdef WITH_TINYXML2
     outContent.append("Format xml don't sapport\n");
 #else

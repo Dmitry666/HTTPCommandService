@@ -10,7 +10,7 @@ TEMPLATE = lib
 DEFINES += \
     #WITH_JAVASCRIPT \
     WITH_COOKIE \
-    #WITH_JSONCPP \
+    WITH_JSONCPP \
     #WITH_TINYXML2 \
     #WITH_SSL \
     WITH_CTPP
@@ -23,7 +23,7 @@ CONFIG += c++11
 win32 {
 
     mingw {
-        QMAKE_CXXFLAGS = -fPIC
+        #QMAKE_CXXFLAGS = -fPIC
 
         INCLUDEPATH += /usr/include
         LIBS += -L/usr/lib

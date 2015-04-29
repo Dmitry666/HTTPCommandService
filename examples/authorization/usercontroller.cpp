@@ -11,23 +11,34 @@ bool UserController::Construct()
 
 bool UserController::Validate(const SessionId& sessionId, const ControllerArguments& arguments)
 {
+    UNUSED(arguments)
+
     return _users.find(sessionId.Id) != _users.end();
 }
 
 CONTROLLER_ACTIONVALIDATEIMPL(UserController, Help, "Help", "Help information.")
 bool UserController::HelpValidate(const SessionId& sessionId, const ControllerArguments& arguments)
 {
+    UNUSED(sessionId)
+    UNUSED(arguments)
+
     return true;
 }
 
 void UserController::Help(const SessionId& sessionId, const ControllerArguments& arguments, ControllerOutput& content)
 {
+    UNUSED(sessionId)
+    UNUSED(arguments)
+
     content.append("User/Login?name=user&password=qwerty.\n");
 }
 
 CONTROLLER_ACTIONVALIDATEIMPL(UserController, Login, "Login", "Authorization user.")
 bool UserController::LoginValidate(const SessionId& sessionId, const ControllerArguments& arguments)
 {
+    UNUSED(sessionId)
+    UNUSED(arguments)
+
     return true;
 }
 
@@ -62,6 +73,8 @@ void UserController::Login(const SessionId& sessionId, const ControllerArguments
 CONTROLLER_ACTIONIMPL(UserController, DoAction, "DoAction", "Action.")
 void UserController::DoAction(const SessionId& sessionId, const ControllerArguments& arguments, ControllerOutput& content)
 {
+    UNUSED(arguments)
+
     auto it = _users.find(sessionId.Id);
     if(it == _users.end())
     {
@@ -78,6 +91,8 @@ void UserController::DoAction(const SessionId& sessionId, const ControllerArgume
 CONTROLLER_ACTIONIMPL(UserController, Logout, "Logout", "Deauthorization user.")
 void UserController::Logout(const SessionId& sessionId, const ControllerArguments& arguments, ControllerOutput& content)
 {
+    UNUSED(arguments)
+
     auto it = _users.find(sessionId.Id);
     if(it == _users.end())
     {

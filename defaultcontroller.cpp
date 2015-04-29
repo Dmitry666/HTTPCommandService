@@ -13,12 +13,18 @@ bool DefaultController::Construct()
 
 bool DefaultController::Validate(const SessionId& sessionId, const ControllerArguments& arguments) 
 {
+    UNUSED(sessionId)
+    UNUSED(arguments)
+
     return true;
 }
 
 CONTROLLER_ACTIONVALIDATEIMPL(DefaultController, Test, "Test", "Action from test.")
 bool DefaultController::TestValidate(const SessionId& sessionId, const ControllerArguments& arguments)
 {
+    UNUSED(sessionId)
+    UNUSED(arguments)
+
     return true;
 }
 

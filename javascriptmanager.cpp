@@ -50,12 +50,9 @@ using namespace std;
 #pragma comment(lib,"gmock.lib")
 #pragma comment(lib,"winmm.lib")
 #endif
-#endif
-
 
 namespace http {
 
-#ifdef WITH_JAVASCRIPT
 Handle<String> ReadFile(Isolate* isolate, const string& name) 
 {
 	FILE* file = fopen(name.c_str(), "rb");
@@ -113,8 +110,6 @@ StringHttpRequest kSampleRequests[kSampleSize] =
 	StringHttpRequest("/", "localhost", "yahoo.com", "firefox")
 };
 
-#endif
-
 JavascriptManager::JavascriptManager()
 	//: _processor(nullptr)
 {}
@@ -124,7 +119,6 @@ JavascriptManager::~JavascriptManager()
 
 void JavascriptManager::Initialize(int argc, char* argv[])
 {
-#ifdef WITH_JAVASCRIPT
 	V8::InitializeICU();
 	Platform* platform = platform::CreateDefaultPlatform();
 	V8::InitializePlatform(platform);
@@ -154,24 +148,20 @@ void JavascriptManager::Initialize(int argc, char* argv[])
 #endif
 
 	LoadScritps("./");
-#endif
 }
 
 void JavascriptManager::Shutdown()
 {
-#ifdef WITH_JAVASCRIPT
 	//delete _processor;
 	//_isolate->Dispose();
 
 	V8::Dispose();
 	V8::ShutdownPlatform();
 	//delete platform;
-#endif
 }
 
 int32 JavascriptManager::Execute(const string& file, const map<string, string>& options, const map<string, string>& argumentsMap, map<string, string>& output)
 {
-#ifdef WITH_JAVASCRIPT
 #if 0
 	Isolate* isolate = Isolate::New();
 
@@ -211,8 +201,6 @@ int32 JavascriptManager::Execute(const string& file, const map<string, string>& 
 
 	isolate->Dispose();
 #endif
-#endif
-
 	return 0;
 }
 
@@ -240,4 +228,4 @@ void JavascriptManager::LoadScritps(const std::string& folderPath)
 }
 
 } // End http.
-
+#endif

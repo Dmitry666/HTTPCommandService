@@ -11,12 +11,18 @@ bool ExampleController::Construct()
 
 bool ExampleController::Validate(const SessionId& sessionId, const ControllerArguments& arguments)
 {
+    UNUSED(sessionId)
+    UNUSED(arguments)
+
     return true;
 }
 
 CONTROLLER_ACTIONVALIDATEIMPL(ExampleController, DoAction, "DoAction", "Example action.")
 bool ExampleController::DoActionValidate(const SessionId& sessionId, const ControllerArguments& arguments)
 {
+    UNUSED(sessionId)
+    UNUSED(arguments)
+
     return true;
 }
 
