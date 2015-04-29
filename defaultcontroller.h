@@ -5,6 +5,9 @@
 
 namespace http {
 
+/**
+ * @brief Test default controller.
+ */
 class DefaultController : public IController
 {
     CONTROLLERVALIDATE_REGISTER(DefaultController, "DefaultTest", "Controller from testing.")

@@ -54,14 +54,33 @@ private:
     ArgumentsContainer _argumentMap;
 };
 
+/**
+ * @brief Http service manager.
+ */
 class HttpService
 {
 public:
     HCORE_API HttpService(const HttpServiceArguments& arguments);
     HCORE_API ~HttpService();
 
+	/**
+	 * @brief Start service by address and port.
+	 * @param address
+	 * @param port server port.
+	 * @return started.
+	 */
     HCORE_API bool Start(const std::string& address, const std::string& port);
+
+	/**
+	 * @brief Stop service.
+	 * @return stoped.
+	 */
     HCORE_API bool Stop();
+
+	/**
+	 * @brief Wait stoped service.
+	 * @return
+	 */
     HCORE_API bool Join(float time = 0.f);
 
 private:

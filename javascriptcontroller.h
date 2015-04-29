@@ -11,10 +11,9 @@
 
 namespace http {
 
-	/**
+/**
  * @brief Template controller action.
  */
-
 class JavaScriptControllerMethod : public ControllerMethod
 {
 public:
@@ -35,10 +34,24 @@ public:
 			//!_validatorName.empty();
     }
 
+	/**
+	 * @brief Call validation js function.
+	 * @param obj controller pointer.
+     * @param sessionId session identificator.
+	 * @param arguments input arguments.
+     * @return validation success.
+	 */
 	virtual bool Validate(class IController* obj,
 		const SessionId& sessionId,
 		const ControllerArguments& arguments) override;
 
+    /**
+     * @brief Execute this js controller action.
+     * @param obj controller pointer.
+	 * @param sessionId session identificator.
+     * @param arguments request arguments.
+     * @param contents out content.
+     */
 	virtual void Execute(class IController* obj,
 		const SessionId& sessionId,
 		const ControllerArguments& arguments,
@@ -49,6 +62,9 @@ protected:
 	v8::Persistent<v8::Function> validator_;	
 };
 
+/** 
+ * @brief Controller with javascript.
+ */
 class JavascriptController 
 	: public IController
 	, public JsHttpRequestProcessor
@@ -69,6 +85,7 @@ public:
     /**
      * @brief Validate controller from session.
      * @param sessionId session identificator.
+	 * @param arguments input arguments.
      * @return validation success.
      */
 	virtual bool Validate(const SessionId& sessionId, const ControllerArguments& arguments) override;
@@ -91,6 +108,14 @@ public:
             const ControllerArguments& arguments,
             ControllerOutput& outContent);
 
+	/**
+	 * @brief Registration new js method.
+	 * @param name action name.
+	 * @param description action description.
+	 * @param isolate v8 js isolate.
+	 * @param function v8 action function.
+	 * @param validator v8 action validator.
+	 */
     void JSRegisterMethod(
 		const std::string& name, 
 		const std::string& description,

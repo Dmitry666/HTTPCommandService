@@ -24,6 +24,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExampleCppModule", "..\exam
 		{FF1922B0-9110-4F4E-A9A5-7C2F4A1B4343} = {FF1922B0-9110-4F4E-A9A5-7C2F4A1B4343}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HTTPCommandExtension", "HTTPCommandExtension.vcxproj", "{9746E081-9D9D-4933-9FA5-6FB4D55CD955}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -46,6 +48,10 @@ Global
 		{30C27AD4-3168-41F0-80D0-2B300D050D7C}.Debug|Win32.Build.0 = Debug|Win32
 		{30C27AD4-3168-41F0-80D0-2B300D050D7C}.Release|Win32.ActiveCfg = Release|Win32
 		{30C27AD4-3168-41F0-80D0-2B300D050D7C}.Release|Win32.Build.0 = Release|Win32
+		{9746E081-9D9D-4933-9FA5-6FB4D55CD955}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9746E081-9D9D-4933-9FA5-6FB4D55CD955}.Debug|Win32.Build.0 = Debug|Win32
+		{9746E081-9D9D-4933-9FA5-6FB4D55CD955}.Release|Win32.ActiveCfg = Release|Win32
+		{9746E081-9D9D-4933-9FA5-6FB4D55CD955}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -6,6 +6,10 @@
 namespace http {
 
 //typedef std::map<std::string, std::string> ControllerArguments;
+
+/**
+ * @brief Controller map input argument.
+ */
 struct ControllerArguments
 {
     typedef std::map<std::string, std::string> ArgumentsContainer;
@@ -49,6 +53,10 @@ private:
 typedef std::string ControllerOutput;
 
 typedef std::string SessionKey;
+
+/**
+ * @brief Session identificator struct.
+ */
 struct SessionId
 {
     int32 Id;
@@ -162,6 +170,7 @@ public:
     /**
      * @brief Validate method from session.
      * @param sessionId session identificator.
+	 * @param arguments input arguments.
      * @return validation success.
      */
     virtual bool Validate(class IController* obj,
@@ -171,6 +180,7 @@ public:
     /**
      * @brief Execute this controller action.
      * @param obj controller pointer.
+	 * @param sessionId session identificator.
      * @param arguments request arguments.
      * @param contents out content.
      */
@@ -182,6 +192,7 @@ public:
     /**
      * @brief Execute operator.
      * @param obj controller pointer.
+	 * @param sessionId session identificator.
      * @param arguments request arguments.
      * @param contents out content.
      * @return controller method reference.
@@ -292,6 +303,7 @@ public:
     /**
      * @brief Validate controller from session.
      * @param sessionId session identificator.
+	 * @param arguments input arguments.
      * @return validation success.
      */
     virtual bool Validate(const SessionId& sessionId, const ControllerArguments& arguments)
@@ -391,6 +403,9 @@ private:
     static std::map<std::string, IController*> _controllers;
 };
 
+/**
+ * @brief Template class from registration controller.
+ */
 template<typename Type, typename Collection>
 class TControllerRegistrar
 {
@@ -401,6 +416,9 @@ public:
     }
 };
 
+/**
+ * @brief Template class from registration controller method.
+ */
 template<typename ClassType>
 class TMethodRegistrar
 {

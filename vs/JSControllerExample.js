@@ -23,6 +23,16 @@ function ProcessValidate() {
 	return true;
 }
 
+function httpGet(theUrl)
+{
+    var xmlHttp = null;
+
+    xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", theUrl, false );
+    xmlHttp.send( null );
+    return xmlHttp.responseText;
+}
+
 function Process(arguments) {
 
 	
@@ -46,7 +56,7 @@ function Process(arguments) {
 	output["key"] = arguments.key;
 	output["arguments"] = arguments.toString();
 	//arguments.forEach(logMapElements);
-	output["body"] = "Ok.";
+	output["body"] = "ok"; //httpGet("http://stackoverflow.com/");
 }
 
 Initialize();
