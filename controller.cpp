@@ -7,6 +7,11 @@ using namespace std;
 
 namespace http {
 
+void ControllerOutput::Append(const std::string& value)
+{
+	_body.append(value);
+}
+
 string ToLower(const string& text)
 {
     string textLower = text;

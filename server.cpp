@@ -55,6 +55,11 @@ void server::run()
     io_service_.run();
 }
 
+void server::stop()
+{
+	io_service_.stop();
+}
+
 void server::do_accept()
 {
     acceptor_.async_accept(socket_,

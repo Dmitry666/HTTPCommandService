@@ -53,6 +53,8 @@ public:
     /// Run the server's io_service loop.
     void run();
 
+	void stop();
+
 private:
     /// Perform an asynchronous accept operation.
     void do_accept();
@@ -60,6 +62,7 @@ private:
     /// Wait for a request to stop the server.
     void do_await_stop();
 
+private:
     /// The io_service used to perform asynchronous operations.
     boost::asio::io_service io_service_;
 

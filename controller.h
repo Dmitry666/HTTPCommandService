@@ -50,7 +50,26 @@ private:
     ArgumentsContainer _argumentMap;
 };
 
-typedef std::string ControllerOutput;
+struct ControllerOutput
+{
+	ControllerOutput()
+	{}
+
+	HCORE_API void Append(const std::string& value);
+
+	// From stl.
+	void append(const std::string& value)
+	{
+		Append(value);
+	}
+
+	const std::string& GetBody() const { return _body; }
+
+private:
+	std::string _body;
+};
+
+//typedef std::string ControllerOutput;
 
 typedef std::string SessionKey;
 

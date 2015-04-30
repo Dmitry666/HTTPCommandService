@@ -4,10 +4,11 @@
 #include "httpservice.h"
 
 using namespace http;
+using namespace std;
 
-std::string _address = "0.0.0.0";
-std::string _port = "10000";
-std::string _root = "./";
+string _address = "0.0.0.0";
+string _port = "10000";
+string _root = "./";
 
 int main(int argc, char* argv[])
 {
@@ -29,8 +30,22 @@ int main(int argc, char* argv[])
 
     HttpService service(arguments);
 
-	std::cout << "Start HTTP Service: " << _address << ":" << _port << ", " << _root << std::endl;
+	cout << "Start HTTP Service: " << _address << ":" << _port << ", " << _root << endl;
     service.Start(_address, _port);
+
+	bool bExit = false;
+	do
+	{
+		string command;
+		getline (std::cin, command);
+		transform(command.begin(), command.end(), command.begin(), ::tolower);
+
+		if (command == "stop" || command == "exit")
+			bExit = true;
+	} 
+	while (!bExit);
+
+	service.Stop();
     service.Join();
 
     return 0;

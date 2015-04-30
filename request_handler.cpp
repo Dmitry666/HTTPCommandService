@@ -84,113 +84,123 @@ void request_handler::handle_request(const request& req, reply& rep)
     if (request_path[request_path.size() - 1] == '/')
     {
         request_path += "index.html";
+
+		// Determine the file extension.
+		std::size_t last_slash_pos = request_path.find_last_of("/");
+		std::size_t last_dot_pos = request_path.find_last_of(".");
+		std::string extension;
+		if (last_dot_pos != std::string::npos && last_dot_pos > last_slash_pos)
+		{
+			extension = request_path.substr(last_dot_pos + 1);
+		}
+
+		// Open the file to send back.
+		std::string full_path = doc_root_ + request_path;
+		std::ifstream is(full_path.c_str(), std::ios::in | std::ios::binary);
+		if (!is)
+		{
+			rep = reply::stock_reply(reply::not_found);
+			return;
+		}
+
+		// Fill out the reply to be sent to the client.
+		rep.status = reply::ok;
+		char buf[512];
+		while (is.read(buf, sizeof(buf)).gcount() > 0)
+			rep.content.append(buf, is.gcount());
+
+		rep.headers.resize(2);
+		rep.headers[0].name = "Content-Length";
+		rep.headers[0].value = std::to_string(rep.content.size());
+		rep.headers[1].name = "Content-Type";
+		rep.headers[1].value = mime_types::extension_to_type(extension);
+
+		return;
     }
 
-    //
-    auto blocks = split(request_path, '?');
+	//
+	auto blocks = split(request_path, '?');
 
-    if(blocks.empty())
-    {
-        rep = reply::stock_reply(reply::not_found);
-        return;
-    }
+	if(blocks.empty())
+	{
+		rep = reply::stock_reply(reply::not_found);
+		return;
+	}
 
-    const string& blockA = blocks[0];
-    const string blockB = blocks.size() > 1 ? blocks[1] : "";
+	const string& blockA = blocks[0];
+	const string blockB = blocks.size() > 1 ? blocks[1] : "";
 
-    auto controllerBlocks = split(blockA, '/');
+	auto controllerBlocks = split(blockA, '/');
 
-    if(controllerBlocks.size() != 2)
-    {
-        rep = reply::stock_reply(reply::not_found);
-        return;
-    }
+	if(controllerBlocks.size() != 2)
+	{
+		rep = reply::stock_reply(reply::not_found);
+		return;
+	}
 
-    const string controllerName = controllerBlocks[0];
-    const string commandName = controllerBlocks[1];
+	const string controllerName = controllerBlocks[0];
+	const string commandName = controllerBlocks[1];
 
-    const vector<string> arguments = split(blockB, '&');
+	const vector<string> arguments = split(blockB, '&');
 
-    IController* icontroller = ControllerManager::FindController(controllerName);
-    if(icontroller == nullptr)
-    {
-        rep = reply::stock_reply(reply::not_found);
-        return;
-    }
+	IController* icontroller = ControllerManager::FindController(controllerName);
+	if(icontroller == nullptr)
+	{
+		rep = reply::stock_reply(reply::not_found);
+		return;
+	}
 
 	if( !icontroller->BeginAction() )
 	{
 		rep = reply::stock_reply(reply::not_found);
-        return;
+		return;
 	}
 
-    ControllerMethodRef methodRef = icontroller->FindMethod(commandName);
-    if( methodRef == nullptr )
-    {
-        rep = reply::stock_reply(reply::not_found);
-        return;
-    }
+	ControllerMethodRef methodRef = icontroller->FindMethod(commandName);
+	if( methodRef == nullptr )
+	{
+		rep = reply::stock_reply(reply::not_found);
+		return;
+	}
 
-    map<string, string> argumentsMap;
-    for(auto& argument : arguments)
-    {
-        const vector<string> ts = split(argument, '=');
-        if(ts.size() == 2)
-        {
-            argumentsMap.insert(std::make_pair(ts[0], ts[1]));
-        }
-    }
+	map<string, string> argumentsMap;
+	for(auto& argument : arguments)
+	{
+		const vector<string> ts = split(argument, '=');
+		if(ts.size() == 2)
+		{
+			argumentsMap.insert(std::make_pair(ts[0], ts[1]));
+		}
+	}
 
 #ifdef WITH_COOKIE
-    SessionId sessionId = sessionKey.empty() ?
-                SessionManager::NewSession() :
-                SessionManager::FindSessionByKey(sessionKey);
+	SessionId sessionId = sessionKey.empty() ?
+				SessionManager::NewSession() :
+				SessionManager::FindSessionByKey(sessionKey);
 
-    if(!sessionId.IsValid())
-    {
-        sessionId = SessionManager::NewSession();
-    }
+	if(!sessionId.IsValid())
+	{
+		sessionId = SessionManager::NewSession();
+	}
 #else
-    SessionId sessionId;
+	SessionId sessionId;
 #endif
 
-    bool validate = methodRef->IsValidateMethod() ? methodRef->Validate(icontroller, sessionId, argumentsMap) :
-            icontroller->Validate(sessionId, argumentsMap);
+	bool validate = methodRef->IsValidateMethod() ? methodRef->Validate(icontroller, sessionId, argumentsMap) :
+			icontroller->Validate(sessionId, argumentsMap);
 
-    if(!validate)
-    {
-        rep = reply::stock_reply(reply::not_found);
-        return;
-    }
+	if(!validate)
+	{
+		rep = reply::stock_reply(reply::not_found);
+		return;
+	}
 
-    (*methodRef)(icontroller, sessionId, argumentsMap, rep.content);
+	ControllerOutput output;
+	(*methodRef)(icontroller, sessionId, argumentsMap, output);
 
+	rep.content = output.GetBody();
 	icontroller->EndAction();
-    /*
-    // Determine the file extension.
-    std::size_t last_slash_pos = request_path.find_last_of("/");
-    std::size_t last_dot_pos = request_path.find_last_of(".");
-    std::string extension;
-    if (last_dot_pos != std::string::npos && last_dot_pos > last_slash_pos)
-    {
-        extension = request_path.substr(last_dot_pos + 1);
-    }
 
-    // Open the file to send back.
-    std::string full_path = doc_root_ + request_path;
-    std::ifstream is(full_path.c_str(), std::ios::in | std::ios::binary);
-    if (!is)
-    {
-        rep = reply::stock_reply(reply::not_found);
-        return;
-    }
-
-    // Fill out the reply to be sent to the client.
-    rep.status = reply::ok;
-    char buf[512];
-    while (is.read(buf, sizeof(buf)).gcount() > 0)
-        rep.content.append(buf, is.gcount());
-    */
 #ifdef WITH_COOKIE
     rep.headers.resize(2 + int32(sessionKey.empty() || sessionKey != sessionId.Key));
 #else

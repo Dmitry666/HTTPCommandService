@@ -66,7 +66,7 @@ bool HttpService::Start(const std::string& address, const std::string& port)
 
 bool HttpService::Stop()
 {
-    //_s->S
+	_s->stop();
     return true;
 }
 
