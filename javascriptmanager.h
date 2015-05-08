@@ -38,6 +38,9 @@ public:
 		const std::map<std::string, std::string>& argumentsMap, 
 		std::map<std::string, std::string>& output);
 
+	v8::Isolate* GetIsolate() { return isolate_; }
+	v8::Persistent<v8::Context>& GetContext() { return context_; }
+
 	/**
 	 * @brief Singleton instance.
 	 */
@@ -45,6 +48,23 @@ public:
 
 private:
 	void LoadScritps(const std::string& folder);
+	bool InitializeJs();
+	bool ShutdownJs();
+
+	bool InstallMaps(std::map<std::string, std::string>* opts, std::map<std::string, std::string>* output);
+
+	v8::Handle<v8::Object> WrapMap(std::map<std::string, std::string>* obj);
+	static std::map<std::string, std::string>* UnwrapMap(v8::Handle<v8::Object> obj);
+
+	static std::string ObjectToString(v8::Local<v8::Value> value);
+	static void MapGet(v8::Local<v8::Name> name, const v8::PropertyCallbackInfo<v8::Value>& info);
+	static void MapSet(v8::Local<v8::Name> name, v8::Local<v8::Value> value_obj, const v8::PropertyCallbackInfo<v8::Value>& info);
+	v8::Handle<v8::ObjectTemplate> MakeMapTemplate(v8::Isolate* isolate);
+
+	
+	
+
+	static v8::Persistent<v8::ObjectTemplate> map_template_;
 
 private:
 	std::vector<class JavascriptController*> _controllers;
@@ -52,7 +72,8 @@ private:
 	std::map<std::string, std::string> _argumentsMap;
 	std::map<std::string, std::string> _outputs;
 
-	v8::Isolate* _isolate;
+	v8::Isolate* isolate_;
+	v8::Persistent<v8::Context> context_;
 };
 
 } // End http.

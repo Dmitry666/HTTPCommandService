@@ -1,7 +1,7 @@
 #include "controller.h"
 #include <algorithm>
 #include "service-config.h"
-
+#include <iostream>
 
 using namespace std;
 
@@ -58,6 +58,8 @@ void ControllerManager::RegisterController(IController* controller)
 	controller->Construct();
     _controllers.insert(make_pair(ToLower(controller->ClassName()), controller));
     //controller->RegisterMethods();
+
+	cout << "Register Controller: " << controller->ClassName() << endl;
 }
 
 IController* ControllerManager::FindController(const string& name)

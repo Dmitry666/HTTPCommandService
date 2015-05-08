@@ -67,12 +67,12 @@ protected:
  */
 class JavascriptController 
 	: public IController
-	, public JsHttpRequestProcessor
+	//, public JsHttpRequestProcessor
 {
 public:
     JavascriptController(const std::string& name, const std::string& description, const std::string& filename)
         : IController(name, description)
-		, JsHttpRequestProcessor()
+		//, JsHttpRequestProcessor()
 		, _filename(filename)
     {}
 
@@ -129,16 +129,32 @@ public:
         RegisterMethod(new JavaScriptControllerMethod(name, description, isolate, function, validator));
     }
 
+	static std::string ObjectToString(v8::Local<v8::Value> value);
+	static void MapGet(v8::Local<v8::Name> name, const v8::PropertyCallbackInfo<v8::Value>& info);
+	static void MapSet(v8::Local<v8::Name> name, v8::Local<v8::Value> value_obj, const v8::PropertyCallbackInfo<v8::Value>& info);
+	v8::Handle<v8::ObjectTemplate> MakeMapTemplate(v8::Isolate* isolate);
+
 private:
 	bool Load();
 	void UnLoad();
 	bool IsModified();
 
 	v8::Handle<v8::String> ReadFile(v8::Isolate* isolate, const std::string& name);
+	bool InitializeScript();
+	bool ExecuteScript(v8::Handle<v8::String> script);
+
+	v8::Handle<v8::Object> WrapMap(std::map<std::string, std::string>* obj);
+	static std::map<std::string, std::string>* UnwrapMap(v8::Handle<v8::Object> obj);
+
 
 private:
 	std::string _filename;
 	time_t _lastModifyTime;
+
+	v8::Isolate* GetIsolate() { return isolate_; }
+
+	v8::Isolate* isolate_;
+	v8::Handle<v8::String> script_;
 
 	v8::Persistent<v8::Function> validator_;
 	std::map<std::string, v8::Persistent<v8::Function>> _validators;
@@ -147,6 +163,8 @@ private:
 	std::map<std::string, std::string> _options;
 	std::map<std::string, std::string> _argumentsMap;
 	std::map<std::string, std::string> _outputs;
+
+	static v8::Persistent<v8::ObjectTemplate> map_template_;
 };
 
 } // End http.
