@@ -67,8 +67,8 @@ bool JavascriptController::Construct()
 
 bool JavascriptController::Load()
 {
-	//isolate_ = JavascriptManager::Instance().GetIsolate();
-	isolate_ = Isolate::New();
+	isolate_ = JavascriptManager::Instance().GetIsolate();
+	//isolate_ = Isolate::New();
 
 	{
 		Isolate::Scope isolate_scope(isolate_);
@@ -443,8 +443,19 @@ bool JavascriptController::InitializeScript()
 	// Create a handle scope to hold the temporary references.
 	HandleScope handle_scope(GetIsolate());
 
-	Local<Context> context = Local<Context>::New(GetIsolate(), JavascriptManager::Instance().GetContext());
+	Handle<ObjectTemplate> global = ObjectTemplate::New(GetIsolate());
+	global->Set(String::NewFromUtf8(GetIsolate(), "log"),
+				FunctionTemplate::New(GetIsolate(), JavascriptManager::LogCallback));
+
+	Handle<Context> context = Context::New(GetIsolate(), nullptr, global);
+	context_.Reset(GetIsolate(), context);
+
+	//Local<Context> context = Local<Context>::New(GetIsolate(), JavascriptManager::Instance().GetContext());
 	Context::Scope context_scope(context);
+
+	// Make the options mapping available within the context
+	if (!InstallMaps(&_options, &_outputs))
+		return false;
 
 	// Compile and run the script
 	if (!ExecuteScript(script_))
@@ -460,6 +471,7 @@ bool JavascriptController::InitializeScript()
 	// take place there
 	//Context::Scope context_scope(context);
 
+	// Search meta.
 	Handle<String> meta_name = String::NewFromUtf8(GetIsolate(), "meta");
 	Handle<Value> meta_val = context->Global()->Get(meta_name);
 
@@ -513,6 +525,7 @@ bool JavascriptController::InitializeScript()
 
 	}
 
+	// Actions.
 	Handle<Object> actions_object = JSValue::GetObject(meta_object, "actions");
 
 	Handle<Array> properties_names = actions_object->GetPropertyNames();
@@ -573,6 +586,27 @@ bool JavascriptController::InitializeScript()
 		}
 	}
 
+	// Libs.
+	Handle<Object> libs_object = JSValue::GetObject(meta_object, "libs");
+	if(!libs_object.IsEmpty() && libs_object->IsArray())
+	{
+		Handle<Array> libs_names = Handle<Array>::Cast(libs_object);
+		for(int i=0;i<libs_names->Length(); ++i)
+		{
+			Handle<Value> lib_value = libs_names->Get(i);
+			Handle<String> lib_string = Handle<String>::Cast(lib_value);
+
+			if(!lib_string.IsEmpty())
+			{
+				String::Utf8Value str(lib_string);
+				std::string filename = *str;
+
+				AddLibrary(filename);
+			}
+		}
+	}
+
+
 	return true;
 }
 
@@ -604,6 +638,48 @@ bool JavascriptController::ExecuteScript(Handle<String> script)
 		// Running the script failed; bail out.
 		return false;
 	}
+
+	return true;
+}
+
+bool JavascriptController::AddLibrary(const std::string& filename)
+{
+	Isolate::Scope isolate_scope(isolate_);
+	HandleScope scope(isolate_);
+	Handle<String> source = ReadFile(isolate_, _filename);
+
+	if (source.IsEmpty()) 
+	{
+		fprintf(stderr, "Error reading '%s'.\n", _filename.c_str());
+		return false;
+	}
+
+	libs_.push_back(source);
+
+	if (!ExecuteScript(source))
+		return false;
+
+	return true;
+}
+
+//
+bool JavascriptController::InstallMaps(map<string, string>* opts, map<string, string>* output) 
+{
+	HandleScope handle_scope(GetIsolate());
+
+	// Wrap the map object in a JavaScript wrapper
+	Handle<Object> opts_obj = WrapMap(opts);
+
+	v8::Local<v8::Context> context =
+		v8::Local<v8::Context>::New(GetIsolate(), context_);
+
+	// Set the options object as a property on the global object.
+	context->Global()->Set(String::NewFromUtf8(GetIsolate(), "options"),
+							opts_obj);
+
+	Handle<Object> output_obj = WrapMap(output);
+	context->Global()->Set(String::NewFromUtf8(GetIsolate(), "output"),
+							output_obj);
 
 	return true;
 }

@@ -142,10 +142,13 @@ private:
 	v8::Handle<v8::String> ReadFile(v8::Isolate* isolate, const std::string& name);
 	bool InitializeScript();
 	bool ExecuteScript(v8::Handle<v8::String> script);
+	bool AddLibrary(const std::string& filename);
 
 	v8::Handle<v8::Object> WrapMap(std::map<std::string, std::string>* obj);
 	static std::map<std::string, std::string>* UnwrapMap(v8::Handle<v8::Object> obj);
 
+	bool InstallMaps(std::map<std::string, std::string>* opts, std::map<std::string, std::string>* output);
+	
 
 private:
 	std::string _filename;
@@ -154,7 +157,9 @@ private:
 	v8::Isolate* GetIsolate() { return isolate_; }
 
 	v8::Isolate* isolate_;
+	v8::Persistent<v8::Context> context_;
 	v8::Handle<v8::String> script_;
+	std::vector<v8::Handle<v8::String>> libs_;
 
 	v8::Persistent<v8::Function> validator_;
 	std::map<std::string, v8::Persistent<v8::Function>> _validators;

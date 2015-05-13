@@ -45,6 +45,7 @@ public:
 	 * @brief Singleton instance.
 	 */
 	static JavascriptManager& Instance();
+	static void LogCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
 
 private:
 	void LoadScritps(const std::string& folder);

@@ -53,7 +53,7 @@ using namespace std;
 
 namespace http {
 
-static void LogCallback(const FunctionCallbackInfo<Value>& args) 
+void JavascriptManager::LogCallback(const FunctionCallbackInfo<Value>& args) 
 {
 	  if (args.Length() < 1) 
 		  return;
