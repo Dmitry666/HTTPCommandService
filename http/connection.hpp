@@ -68,6 +68,7 @@ private:
     /// Perform an asynchronous write operation.
     void do_write();
 
+private:
     /// Socket for the connection.
     boost::asio::ip::tcp::socket socket_;
 
