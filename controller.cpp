@@ -5,7 +5,7 @@
 
 using namespace std;
 
-namespace http {
+namespace openrc {
 
 void ControllerOutput::Append(const std::string& value)
 {

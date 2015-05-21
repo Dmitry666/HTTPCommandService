@@ -19,17 +19,20 @@
 #pragma GCC diagnostic pop
 #endif
 
-#include "server.hpp"
+#include "http/server.hpp"
 #include "modulemanager.h"
 #include "javascriptmanager.h"
 
-using namespace http;
+//using namespace openrc::http;
 using namespace std;
 
 thread _thread;
-http::server::server* _s;
 
-namespace http {
+
+namespace openrc {
+using namespace http;
+
+http::server::server* _s;
 
 HttpService::HttpService(const HttpServiceArguments& arguments)
 	: _arguments(arguments)

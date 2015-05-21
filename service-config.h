@@ -4,7 +4,7 @@
 #ifdef WITH_INICONFIG
 #include "common.h"
 
-namespace http {
+namespace openrc {
 
 class ServiceConfig
 {

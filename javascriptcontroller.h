@@ -9,7 +9,7 @@
 #include <include/libplatform/libplatform.h>
 #include "js-http-request-processor.h"
 
-namespace http {
+namespace openrc {
 
 /**
  * @brief Template controller action.

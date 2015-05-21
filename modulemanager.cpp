@@ -5,7 +5,7 @@
 #include <windows.h>
 #endif
 
-namespace http {
+namespace openrc {
 
 ModuleManager :: ModuleManager()
 {}

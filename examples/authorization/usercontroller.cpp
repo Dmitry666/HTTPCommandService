@@ -1,7 +1,7 @@
 #include "usercontroller.h"
 
 using namespace std;
-namespace http {
+namespace openrc {
 
 CONTROLLER_REGISTERIMPL(UserController)
 bool UserController::Construct()

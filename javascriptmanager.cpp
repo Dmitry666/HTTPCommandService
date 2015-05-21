@@ -51,7 +51,7 @@ using namespace std;
 #pragma comment(lib,"winmm.lib")
 #endif
 
-namespace http {
+namespace openrc {
 
 void JavascriptManager::LogCallback(const FunctionCallbackInfo<Value>& args) 
 {
@@ -135,6 +135,8 @@ void JavascriptManager::Initialize(const std::string& path)
 	Platform* platform = platform::CreateDefaultPlatform();
 	V8::InitializePlatform(platform);
 	V8::Initialize();
+
+	//v8::jui
 
 	InitializeJs();
 
@@ -346,10 +348,11 @@ void JavascriptManager::MapGet(Local<Name> name,
 	string key = ObjectToString(Local<String>::Cast(name));
 
 	// Look up the value if it exists using the standard STL ideom.
-	map<string, string>::iterator iter = obj->find(key);
+	auto iter = obj->find(key);
 
 	// If the key is not present return an empty handle as signal
-	if (iter == obj->end()) return;
+	if (iter == obj->end()) 
+		return;
 
 	// Otherwise fetch the value and wrap it in a JavaScript string
 	const string& value = (*iter).second;

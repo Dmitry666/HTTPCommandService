@@ -41,7 +41,7 @@ public:
 	}
 };
 
-namespace http {
+namespace openrc {
 
 bool JavaScriptControllerMethod::Validate(class IController* obj,
                         const SessionId& sessionId,
@@ -226,6 +226,7 @@ bool JavascriptController::Load()
 
 void JavascriptController::UnLoad()
 {
+	context_.Empty();
 }
 
 bool JavascriptController::IsModified()

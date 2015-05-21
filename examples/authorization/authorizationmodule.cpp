@@ -1,7 +1,7 @@
 #include "authorizationmodule.h"
 #include "usercontroller.h"
 
-using namespace http;
+using namespace openrc;
 
 void AuthorizationModule::InitialiseModule()
 {}

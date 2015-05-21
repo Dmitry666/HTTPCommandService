@@ -14,7 +14,7 @@
 
 using namespace std;
 
-namespace http {
+namespace openrc {
 
 ServiceConfig::ServiceConfig(const string& filename)
 {

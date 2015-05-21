@@ -3,7 +3,7 @@
 
 #include "controller.h"
 
-namespace http {
+namespace openrc {
 
 /**
  * @brief Test default controller.

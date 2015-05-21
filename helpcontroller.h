@@ -4,7 +4,7 @@
 
 #include "controller.h"
 
-namespace http {
+namespace openrc {
 
 /**
  * @brief Help controller from common information.

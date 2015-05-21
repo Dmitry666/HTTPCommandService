@@ -7,7 +7,7 @@
 #include <include/v8.h>
 #include <include/libplatform/libplatform.h>
 
-namespace http {
+namespace openrc {
 
 /**
  * @brief Javascript controller manager.

@@ -4,7 +4,7 @@
 #include "common.h"
 
 
-namespace http {
+namespace openrc {
 
 /**
  * @brief Argument container from service.

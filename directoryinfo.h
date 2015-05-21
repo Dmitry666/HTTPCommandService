@@ -3,7 +3,7 @@
 
 #include "FileInfo.h"
 
-namespace http {
+namespace openrc {
 
 class DirectoryInfo
 {

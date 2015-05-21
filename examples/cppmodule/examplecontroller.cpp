@@ -1,7 +1,7 @@
 #include "examplecontroller.h"
 
 using namespace std;
-namespace http {
+namespace openrc {
 
 CONTROLLER_REGISTERIMPL(ExampleController)
 bool ExampleController::Construct()

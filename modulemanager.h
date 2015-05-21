@@ -3,7 +3,7 @@
 
 #include "module.h"
 
-namespace http {
+namespace openrc {
 
 class ModuleManager
 {

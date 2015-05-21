@@ -7,7 +7,7 @@
 #define _Export __declspec(dllexport)
 #endif
 
-class ExampleCppModule : public http::IModule
+class ExampleCppModule : public openrc::IModule
 {
 public:
     ExampleCppModule()
@@ -20,6 +20,6 @@ public:
 };
 
 extern "C"
-_Export http::IModule* GetModule();
+_Export openrc::IModule* GetModule();
 
 #endif // EXAMPLECPPMODULE_H

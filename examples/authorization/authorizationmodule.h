@@ -7,7 +7,7 @@
 #define _Export __declspec(dllexport)
 #endif
 
-class AuthorizationModule : public http::IModule
+class AuthorizationModule : public openrc::IModule
 {
 public:
     AuthorizationModule()
@@ -20,6 +20,6 @@ public:
 };
 
 extern "C"
-_Export http::IModule* GetModule();
+_Export openrc::IModule* GetModule();
 
 #endif // EXAMPLECPPMODULE_H

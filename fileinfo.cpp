@@ -1,6 +1,6 @@
 #include "fileinfo.h"
 
-namespace http {
+namespace openrc {
 
 //#include <boost/filesystem.hpp>
 //#include <boost/filesystem/operations.hpp>

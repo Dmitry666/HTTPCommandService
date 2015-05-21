@@ -21,7 +21,7 @@
 #pragma GCC diagnostic pop
 #endif
 
-namespace http {
+namespace openrc {
 
 std::map<SessionKey, SessionId> _sessions;
 int32 _lastSessionId = -1;

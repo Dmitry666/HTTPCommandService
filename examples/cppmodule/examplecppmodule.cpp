@@ -1,7 +1,7 @@
 #include "examplecppmodule.h"
 #include "examplecontroller.h"
 
-using namespace http;
+using namespace openrc;
 
 void ExampleCppModule::InitialiseModule()
 {}

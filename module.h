@@ -3,7 +3,7 @@
 
 #include "common.h"
 
-namespace http {
+namespace openrc {
 
 class IModule
 {
