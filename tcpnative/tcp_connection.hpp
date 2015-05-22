@@ -8,6 +8,9 @@
 
 #include "../common-private.h"
 #include "tcp_request_handler.hpp"
+#include "tcp_reply.hpp"
+#include "tcp_request_parser.hpp"
+#include "tcp_request.hpp"
 
 #include <array>
 #include <memory>
@@ -233,6 +236,15 @@ private:
 
     /// Buffer for incoming data.
     std::array<char, 8192> buffer_;
+
+    /// The incoming request.
+    request request_;
+
+    /// The parser for the incoming request.
+    request_parser request_parser_;
+
+    /// The reply to be sent back to the client.
+    reply reply_;
 
 #if 0
 	////!!!!!

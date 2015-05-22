@@ -9,7 +9,8 @@
 //
 
 #ifndef WEB_REQUEST_HANDLER_HPP
-#define HTTPWEB
+#define WEB_REQUEST_HANDLER_HPP
+
 #include <string>
 
 namespace openrc {

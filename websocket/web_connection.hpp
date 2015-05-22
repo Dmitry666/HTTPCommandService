@@ -11,6 +11,9 @@
 
 #include "../common-private.h"
 #include "web_request_handler.hpp"
+#include "web_reply.hpp"
+#include "web_request_parser.hpp"
+#include "web_request.hpp"
 
 #include <array>
 #include <memory>
@@ -89,6 +92,15 @@ private:
 
     /// Buffer for incoming data.
     std::array<char, 8192> buffer_;
+
+    /// The incoming request.
+    request request_;
+
+    /// The parser for the incoming request.
+    request_parser request_parser_;
+
+    /// The reply to be sent back to the client.
+    reply reply_;
 
 #if 0
 private:

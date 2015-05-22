@@ -105,6 +105,9 @@ void connection::do_read()
         });
 }
 
+void connection::stop()
+{}
+
 void connection::do_write()
 {
 #if 0

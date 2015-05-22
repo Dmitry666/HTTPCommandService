@@ -314,7 +314,7 @@ void connection :: start()
         {
             if (!ec)
             {
-				HeaderParser<boost::array<BYTE, 65536>> parser;
+				HeaderParser<std::array<char, 8192>> parser;
 				bool result = parser.parse( buffer_.cbegin(), buffer_.cbegin() + bytes_transferred);
 
 				if (result)
@@ -370,6 +370,9 @@ void connection :: start()
             }
         });
 }
+
+void connection::stop()
+{}
 
 void connection::do_read()
 {
@@ -455,6 +458,7 @@ void connection::do_read()
 void connection::do_write()
 {
     auto self(shared_from_this());
+#if 0
     boost::asio::async_write(socket_, reply_.to_buffers(),
         [this, self](boost::system::error_code ec, std::size_t)
         {
@@ -470,6 +474,7 @@ void connection::do_write()
                 connection_manager_.stop(shared_from_this());
             }
         });
+#endif
 }
 
 #if 0
@@ -709,9 +714,10 @@ void connection :: handle_write(const boost::system::error_code& error)
             );
     }
 }
+#endif
 
 } // namespace websocket
 } // namespace openrc.
 
-#endif
+
 #endif

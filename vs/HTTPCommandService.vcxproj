@@ -36,12 +36,14 @@
     <Import Project="boost.props" />
     <Import Project="jsoncpp.props" />
     <Import Project="v8.props" />
+    <Import Project="openssl.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="boost.props" />
     <Import Project="jsoncpp.props" />
     <Import Project="v8.props" />
+    <Import Project="openssl.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
@@ -50,13 +52,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WITH_COOKIE;WITH_JAVASCRIPT;WITH_CTPP;_WIN32_WINDOWS;_CRT_SECURE_NO_WARNINGS;BOOST_ASIO_HAS_MOVE;__COMPILING_HCORE;WITH_INICONFIG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WITH_COOKIE;WITH_JAVASCRIPT;WITH_CTPP;_WIN32_WINDOWS;_CRT_SECURE_NO_WARNINGS;BOOST_ASIO_HAS_MOVE;__COMPILING_HCORE;WITH_INICONFIG;WITH_WEBSOCKET;WITH_TCPNATIVE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalIncludeDirectories>../third_party;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>jsoncpp.lib;inih.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>jsoncpp.lib;inih.lib;libeay32.lib;ssleay32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>./$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -75,61 +77,78 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>jsoncpp.lib;inih.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>jsoncpp.lib;inih.lib;libeay32.lib;ssleay32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>./$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\common-private.h" />
     <ClInclude Include="..\common.h" />
-    <ClInclude Include="..\connection.hpp" />
-    <ClInclude Include="..\connection_manager.hpp" />
     <ClInclude Include="..\controller.h" />
+    <ClInclude Include="..\crypt.h" />
     <ClInclude Include="..\defaultcontroller.h" />
     <ClInclude Include="..\delegate.h" />
     <ClInclude Include="..\directoryinfo.h" />
     <ClInclude Include="..\fileinfo.h" />
-    <ClInclude Include="..\header.hpp" />
     <ClInclude Include="..\helpcontroller.h" />
     <ClInclude Include="..\httpservice.h" />
+    <ClInclude Include="..\http\connection.hpp" />
+    <ClInclude Include="..\http\connection_manager.hpp" />
+    <ClInclude Include="..\http\header.hpp" />
+    <ClInclude Include="..\http\mime_types.hpp" />
+    <ClInclude Include="..\http\reply.hpp" />
+    <ClInclude Include="..\http\request.hpp" />
+    <ClInclude Include="..\http\request_handler.hpp" />
+    <ClInclude Include="..\http\request_parser.hpp" />
+    <ClInclude Include="..\http\server.hpp" />
+    <ClInclude Include="..\http\sslconnection.hpp" />
+    <ClInclude Include="..\http\sslserver.hpp" />
     <ClInclude Include="..\javascriptcontroller.h" />
     <ClInclude Include="..\javascriptmanager.h" />
     <ClInclude Include="..\js-http-request-processor.h" />
-    <ClInclude Include="..\mime_types.hpp" />
     <ClInclude Include="..\module.h" />
     <ClInclude Include="..\modulemanager.h" />
-    <ClInclude Include="..\reply.hpp" />
-    <ClInclude Include="..\request.hpp" />
-    <ClInclude Include="..\request_handler.hpp" />
-    <ClInclude Include="..\request_parser.hpp" />
-    <ClInclude Include="..\server.hpp" />
     <ClInclude Include="..\service-config.h" />
     <ClInclude Include="..\sessionmanager.h" />
-    <ClInclude Include="..\sslconnection.hpp" />
-    <ClInclude Include="..\sslserver.hpp" />
+    <ClInclude Include="..\tcpnative\tcp_connection.hpp" />
+    <ClInclude Include="..\tcpnative\tcp_server.hpp" />
+    <ClInclude Include="..\tcpnative\tcp_connection_manager.hpp" />
+    <ClInclude Include="..\tcpnative\tcp_request_handler.hpp" />
+    <ClInclude Include="..\websocket\web_connection.hpp" />
+    <ClInclude Include="..\websocket\web_server.hpp" />
+    <ClInclude Include="..\websocket\web_connection_manager.hpp" />
+    <ClInclude Include="..\websocket\web_request_handler.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\connection.cpp" />
-    <ClCompile Include="..\connection_manager.cpp" />
     <ClCompile Include="..\controller.cpp" />
     <ClCompile Include="..\defaultcontroller.cpp" />
     <ClCompile Include="..\directoryinfo.cpp" />
     <ClCompile Include="..\fileinfo.cpp" />
     <ClCompile Include="..\helpcontroller.cpp" />
     <ClCompile Include="..\httpservice.cpp" />
+    <ClCompile Include="..\http\connection.cpp" />
+    <ClCompile Include="..\http\connection_manager.cpp" />
+    <ClCompile Include="..\http\mime_types.cpp" />
+    <ClCompile Include="..\http\reply.cpp" />
+    <ClCompile Include="..\http\request_handler.cpp" />
+    <ClCompile Include="..\http\request_parser.cpp" />
+    <ClCompile Include="..\http\server.cpp" />
+    <ClCompile Include="..\http\sslconnection.cpp" />
+    <ClCompile Include="..\http\sslserver.cpp" />
     <ClCompile Include="..\javascriptcontroller.cpp" />
     <ClCompile Include="..\javascriptmanager.cpp" />
     <ClCompile Include="..\js-http-request-processor.cpp" />
-    <ClCompile Include="..\mime_types.cpp" />
     <ClCompile Include="..\modulemanager.cpp" />
-    <ClCompile Include="..\reply.cpp" />
-    <ClCompile Include="..\request_handler.cpp" />
-    <ClCompile Include="..\request_parser.cpp" />
-    <ClCompile Include="..\server.cpp" />
     <ClCompile Include="..\service-config.cpp" />
     <ClCompile Include="..\sessionmanager.cpp" />
-    <ClCompile Include="..\sslconnection.cpp" />
-    <ClCompile Include="..\sslserver.cpp" />
+    <ClCompile Include="..\tcpnative\tcp_connection.cpp" />
+    <ClCompile Include="..\tcpnative\tcp_server.cpp" />
+    <ClCompile Include="..\tcpnative\tcp_connection_manager.cpp" />
+    <ClCompile Include="..\tcpnative\tcp_request_handler.cpp" />
+    <ClCompile Include="..\websocket\web_connection.cpp" />
+    <ClCompile Include="..\websocket\web_server.cpp" />
+    <ClCompile Include="..\websocket\web_connection_manager.cpp" />
+    <ClCompile Include="..\websocket\web_request_handler.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
