@@ -15,12 +15,10 @@ namespace openrc {
 namespace tcpnative {
 
 request_parser::request_parser()
-    : state_(method_start)
 {}
 
 void request_parser::reset()
 {
-    state_ = method_start;
 }
 
 request_parser::result_type request_parser::parse_json(const std::string& text)

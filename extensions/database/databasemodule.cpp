@@ -1,6 +1,7 @@
 #include "databasemodule.h"
 #include "dbcontext.h"
 
+#ifdef WITH_JAVASCRIPT
 #include <v8pp/class.hpp>
 #include <v8pp/function.hpp>
 #include <v8pp/object.hpp>
@@ -9,6 +10,8 @@
 #include <v8pp/module.hpp>
 
 using namespace v8;
+#endif
+
 using namespace openrc;
 
 void DataBaseModule::InitialiseModule()
@@ -17,6 +20,7 @@ void DataBaseModule::InitialiseModule()
 void DataBaseModule::ShutdownModule()
 {}
 
+#ifdef WITH_JAVASCRIPT
 static Handle<Object> CreateObject(const FunctionCallbackInfo<Value>& args) 
 {
 	DBContext* obj = new DBContext(args);
@@ -64,7 +68,7 @@ V8PP_PLUGIN_INIT(v8::Isolate* isolate)
 {
     return InitAll(isolate);
 }
-
+#endif
 
 IModule* GetModule()
 {

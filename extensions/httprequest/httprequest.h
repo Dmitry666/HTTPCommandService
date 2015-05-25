@@ -1,10 +1,12 @@
-#ifndef HTTP_REQUEST_H
-#define HTTP_REQUEST_H
+#ifndef XMLHTTP_REQUEST_H
+#define XMLHTTP_REQUEST_H
 
 #include <module.h>
 
+#ifdef WITH_JAVASCRIPT
 #include <include/v8.h>
 #include <include/libplatform/libplatform.h>
+#endif
 
 #include <map>
 #include <string>
@@ -14,14 +16,18 @@
 class XMLHttpRequest
 {
 public:
+#ifdef WITH_JAVASCRIPT
 	explicit XMLHttpRequest( const v8::FunctionCallbackInfo<v8::Value>& args );
+#else
+	XMLHttpRequest();
+#endif
 	virtual ~XMLHttpRequest();
 
 	void Open(const std::string& method, const std::string& url, bool bAsync);
 	void Open(const std::string& method, const std::string& url, bool bAsync, const std::string& userName);
 	void Open(const std::string& method, const std::string& url, bool bAsync, const std::string& userName, const std::string& password);
 
-	void Send(const std::string& params);
+	void Send(const std::string& params = "");
 	void Abort();
 
 	void SetRequestHeader(const std::string& name, const std::string& value);
@@ -42,8 +48,11 @@ public:
 	void SetStatusText(const std::string& statusText) { _statusText = statusText; }
 	const std::string& GetStatusText() const { return _statusText; }
 
-
+#ifdef WITH_JAVASCRIPT
 	static void Register(v8::Isolate* isolate);
+#endif
+
+	std::function<void(const std::string&)> OnReadyStateChange;
 
 private:
 	void SendEasy(const std::string& params);

@@ -2,6 +2,7 @@
 #define TCP_REQUEST_PARSER_HPP
 
 #include <tuple>
+#include <string>
 
 namespace openrc {
 namespace tcpnative {

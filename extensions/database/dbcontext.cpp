@@ -1,5 +1,6 @@
 #include "dbcontext.h"
 
+#ifdef WITH_JAVASCRIPT
 #include <v8pp/class.hpp>
 #include <v8pp/module.hpp>
 
@@ -9,20 +10,77 @@ DBContext::DBContext( const v8::FunctionCallbackInfo<v8::Value>& args )
 {
 	//value_ = v8pp::from_v8<double>(args.GetIsolate(), args[0], 0);
 }
+#else
+DBContext::DBContext( )
+{}
+#endif
 
 DBContext::~DBContext()
 {}
 
 bool DBContext::Open()
 {
-	return false;
+	std::string connectLine;
+	try
+	{
+		if(_type == "postgresql")
+		{
+			connectLine = "dbname=" + _dbName + " user=" + _user + " password=" + _password;
+			_sql.open(soci::postgresql, connectLine.c_str());
+		}
+#if 0
+		else if(_type == "mysql")
+		{
+			connectLine = "host=" + host + " dbname=" + dbname + " user=" + user + " password=" + password;
+			_sql.open(soci::mysql, connectLine.c_str());
+		}
+#endif
+		else
+		{
+			return false;
+		}
+
+		_isConnected = true;
+	}
+	catch (std::exception &e)
+	{
+		// e.what()
+		_isConnected = false;
+	}
+
+	return _isConnected;
 }
 
 bool DBContext::Close()
 {
-	return false;
+	try
+	{
+		_sql.close();
+	}
+	catch (std::exception &e)
+	{
+		//ErrorStream::Write("[Net]: Data base. Exception %s", e.what());
+	}
+
+	return true;
 }
 
+soci::rowset<soci::row> DBContext::Query(const std::string& text)
+{
+	try
+	{
+		soci::rowset<soci::row> rowset = _sql.prepare << text;
+		return rowset;
+	}
+	catch (std::exception &e)
+	{
+		throw;
+	}
+
+	//return soci::rowset<soci::row>();
+}
+
+#ifdef WITH_JAVASCRIPT
 void DBContext::Register(Isolate* isolate)
 {
 	Isolate* isolate = Isolate::GetCurrent();
@@ -64,11 +122,4 @@ void DBContext::Register(Isolate* isolate)
 	return handle_scope.Escape(result);
 #endif
 }
-
-
-	std::string _type;
-	std::string _address;
-	std::string _port;
-	std::string _dbName;
-	std::string _user;
-	std::string _password;
+#endif

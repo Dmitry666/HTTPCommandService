@@ -1,10 +1,13 @@
 #include "httprequest.h"
 
+#ifdef WITH_JAVASCRIPT
 #include <v8pp/class.hpp>
 #include <v8pp/module.hpp>
+#endif
 
 #include <future>
 
+#ifdef WITH_JAVASCRIPT
 using namespace v8;
 
 XMLHttpRequest::XMLHttpRequest( const v8::FunctionCallbackInfo<v8::Value>& args )
@@ -14,6 +17,14 @@ XMLHttpRequest::XMLHttpRequest( const v8::FunctionCallbackInfo<v8::Value>& args 
 	_curl = curl_easy_init();
 	//value_ = v8pp::from_v8<double>(args.GetIsolate(), args[0], 0);
 }
+#else
+XMLHttpRequest::XMLHttpRequest()
+	: _bAsync(true)
+	, _curl(nullptr)
+{
+	_curl = curl_easy_init();
+}
+#endif
 
 XMLHttpRequest::~XMLHttpRequest()
 {
@@ -37,7 +48,7 @@ void XMLHttpRequest::Open(const std::string& method, const std::string& url, boo
 
 void XMLHttpRequest::Open(const std::string& method, const std::string& url, bool bAsync, const std::string& userName)
 {
-	Open(method, url, bAsync, userName);
+	Open(method, url, bAsync);
 
 	curl_easy_setopt(_curl, CURLOPT_USERNAME, userName.c_str());	
 }
@@ -68,6 +79,8 @@ void XMLHttpRequest::Send(const std::string& params)
 		std::async(std::launch::async, [this, params](){
 			SendEasy(params);
 		});
+
+		return;
 	}
 
 	SendEasy(params);
@@ -82,6 +95,8 @@ void XMLHttpRequest::SendEasy(const std::string& params)
 	{
 		fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
 	}
+
+	OnReadyStateChange(_responseText);
 }
 
 void XMLHttpRequest::Abort()
@@ -108,7 +123,7 @@ std::string XMLHttpRequest::GetResponseHeader(const std::string& headerName)
 	return it->second;
 }
 
-
+#ifdef WITH_JAVASCRIPT
 void XMLHttpRequest::Register(Isolate* isolate)
 {
 	Isolate* isolate = Isolate::GetCurrent();
@@ -136,6 +151,7 @@ void XMLHttpRequest::Register(Isolate* isolate)
 
 	static Persistent<Object> bindings_(isolate, bindings.new_instance());
 }
+#endif
 
 size_t XMLHttpRequest::writeCallback(char *ptr, size_t size, size_t nmemb, std::string *buffer)
 {

@@ -3,8 +3,20 @@
 
 #include <module.h>
 
+#include <soci/soci.h>
+
+#ifdef WITH_POSTGRESQL
+#include <soci/postgresql/soci-postgresql.h>
+#endif
+
+#ifdef WITH_MYSQL
+#include <mysql/soci-mysql.h>
+#endif
+
+#ifdef WITH_JAVASCRIPT
 #include <include/v8.h>
 #include <include/libplatform/libplatform.h>
+#endif
 
 #include <map>
 #include <string>
@@ -16,13 +28,17 @@ class QueryResult
 class DBContext
 {
 public:
+#ifdef WITH_JAVASCRIPT
 	explicit DBContext( const v8::FunctionCallbackInfo<v8::Value>& args );
+#else
+	DBContext();
+#endif
 	virtual ~DBContext();
 
 	bool Open();
 	bool Close();
 
-	QueryResult Query(const std::string& text);
+	soci::rowset<soci::row> Query(const std::string& text);
 
 	void SetType(const std::string& type) { _type = type; }
 	const std::string& GetType() const { return _type; }
@@ -42,7 +58,9 @@ public:
 	void SetPassword(const std::string& password) { _password = password; }
 	const std::string& GetPassword() const { return _password; }
 
+#ifdef WITH_JAVASCRIPT
 	static void Register(v8::Isolate* isolate);
+#endif
 
 protected:
 	std::string _type;
@@ -51,6 +69,9 @@ protected:
 	std::string _dbName;
 	std::string _user;
 	std::string _password;
+
+	soci::session _sql;
+	bool _isConnected;
 };
 
 #endif // EXAMPLECPPMODULE_H

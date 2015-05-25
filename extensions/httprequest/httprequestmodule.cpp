@@ -1,6 +1,7 @@
 #include "httprequestmodule.h"
 #include "httprequest.h"
 
+#ifdef WITH_JAVASCRIPT
 #include <v8pp/class.hpp>
 #include <v8pp/function.hpp>
 #include <v8pp/object.hpp>
@@ -9,6 +10,8 @@
 #include <v8pp/module.hpp>
 
 using namespace v8;
+#endif
+
 using namespace openrc;
 
 void HttpRequestModule::InitialiseModule()
@@ -19,10 +22,11 @@ void HttpRequestModule::InitialiseModule()
 void HttpRequestModule::ShutdownModule()
 {}
 
+#ifdef WITH_JAVASCRIPT
 static Handle<Object> CreateObject(const FunctionCallbackInfo<Value>& args) 
 {
-	DBContext* obj = new DBContext(args);
-	return v8pp::class_<DBContext>::import_external(args.GetIsolate(), obj);
+	XMLHTTPRequest* obj = new XMLHTTPRequest(args);
+	return v8pp::class_<XMLHTTPRequest>::import_external(args.GetIsolate(), obj);
 }
 
 Handle<Value> InitAll(Isolate* isolate)
@@ -66,10 +70,10 @@ V8PP_PLUGIN_INIT(v8::Isolate* isolate)
 {
     return InitAll(isolate);
 }
-
+#endif
 
 IModule* GetModule()
 {
-    return new DataBaseModule();
+    return new HttpRequestModule();
 }
 
