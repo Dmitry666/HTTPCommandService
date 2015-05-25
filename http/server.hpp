@@ -35,12 +35,14 @@
 #include "connection_manager.hpp"
 #include "request_handler.hpp"
 
+#include "../server.h"
+
 namespace openrc {
 namespace http {
 namespace server {
 
 /// The top-level class of the HTTP server.
-class server
+class server : public base_server
 {
 public:
     server(const server&) = delete;
@@ -52,9 +54,9 @@ public:
       const std::string& doc_root);
 
     /// Run the server's io_service loop.
-    void run();
+    virtual void run() override;
 
-	void stop();
+	virtual void stop() override;
 
 private:
     /// Perform an asynchronous accept operation.

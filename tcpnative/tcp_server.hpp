@@ -10,13 +10,15 @@
 #include "tcp_connection_manager.hpp"
 #include "tcp_request_handler.hpp"
 
+#include "../server.h"
+
 namespace openrc {
 namespace tcpnative {
 
 /**
     Main net server class.
 */
-class tcp_server
+class tcp_server : public base_server
 {
 public:
     tcp_server(const tcp_server&) = delete;
@@ -27,9 +29,9 @@ public:
     explicit tcp_server(const std::string& address, const std::string& port, const std::string& doc_root);
 
     /// Run the server's io_service loop.
-    void run();
+    virtual void run() override;
 
-	void stop();
+	virtual void stop() override;
 
 private:
     /// Perform an asynchronous accept operation.

@@ -84,7 +84,7 @@ public:
     HCORE_API bool Join(float time = 0.f);
 
 private:
-    void Run();
+    //void Run();
 
 private:
 	HttpServiceArguments _arguments;

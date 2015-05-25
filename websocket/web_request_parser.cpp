@@ -11,6 +11,13 @@
 #include "web_request_parser.hpp"
 #include "web_request.hpp"
 
+#include "json/json.h"
+#include "json/reader.h"
+
+#include "../common-private.h"
+
+using namespace std;
+
 namespace openrc {
 namespace websocket {
 
@@ -22,9 +29,31 @@ void request_parser::reset()
     //state_ = method_start;
 }
 
-request_parser::result_type request_parser::parse_json(const std::string& text)
+request_parser::result_type request_parser::parse_json(request& req, const std::string& text)
 {
-	return bad;
+	Json::Value root;   // will contains the root value after parsing.
+	Json::Reader reader;
+	bool parsingSuccessful = reader.parse(text, root);
+	if ( !parsingSuccessful )
+	{
+		// report to the user the failure and their locations in the document.
+		//std::cout  << "Failed to parse configuration\n"
+		//		   << reader.getFormattedErrorMessages();
+		return bad;
+	}
+
+	const Json::Value commandValue = root["code"];
+	const Json::Value bodyValue = root["body"];
+
+	req.command = commandValue.asString();
+	req.body = bodyValue.asString();
+
+	// And you can write to a stream, using the StyledWriter automatically.
+#ifdef _DEBUG
+	std::cout << root;
+#endif
+
+	return good;
 }
 
 } // namespace websocket

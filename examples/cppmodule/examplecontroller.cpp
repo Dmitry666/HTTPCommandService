@@ -9,27 +9,29 @@ bool ExampleController::Construct()
     return true;
 }
 
-bool ExampleController::Validate(const SessionId& sessionId, const ControllerArguments& arguments)
+bool ExampleController::Validate(SessionWeak session, const ControllerArguments& arguments)
 {
-    UNUSED(sessionId)
+    UNUSED(session)
     UNUSED(arguments)
 
     return true;
 }
 
 CONTROLLER_ACTIONVALIDATEIMPL(ExampleController, DoAction, "DoAction", "Example action.")
-bool ExampleController::DoActionValidate(const SessionId& sessionId, const ControllerArguments& arguments)
+bool ExampleController::DoActionValidate(SessionWeak session, const ControllerArguments& arguments)
 {
-    UNUSED(sessionId)
+    UNUSED(session)
     UNUSED(arguments)
 
     return true;
 }
 
-void ExampleController::DoAction(const SessionId& sessionId, const ControllerArguments& arguments, ControllerOutput& content)
+void ExampleController::DoAction(SessionWeak sessionWeak, const ControllerArguments& arguments, ControllerOutput& content)
 {
+	auto session = sessionWeak.lock();
+
     content.append("Example Controller: Hello. I am work.\n");
-    content.append("User: " + std::to_string(sessionId.Id) + ".\n");
+    content.append("User: " + std::to_string(session->Id.Id) + ".\n");
 
     for(auto& pair : arguments)
     {

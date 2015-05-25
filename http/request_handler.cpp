@@ -145,20 +145,22 @@ void request_handler::handle_request(const request& req, reply& rep)
 	}
 
 #ifdef WITH_COOKIE
-	SessionId sessionId = sessionKey.empty() ?
+	SessionWeak sessionWeak = sessionKey.empty() ?
 				SessionManager::NewSession() :
 				SessionManager::FindSessionByKey(sessionKey);
 
-	if(!sessionId.IsValid())
+	if(sessionWeak.expired())
 	{
-		sessionId = SessionManager::NewSession();
+		sessionWeak = SessionManager::NewSession();
 	}
 #else
 	SessionId sessionId;
 #endif
 
-	bool validate = methodRef->IsValidateMethod() ? methodRef->Validate(icontroller, sessionId, argumentsMap) :
-			icontroller->Validate(sessionId, argumentsMap);
+	SessionShared session = sessionWeak.lock();
+
+	bool validate = methodRef->IsValidateMethod() ? methodRef->Validate(icontroller, sessionWeak, argumentsMap) :
+			icontroller->Validate(sessionWeak, argumentsMap);
 
 	if(!validate)
 	{
@@ -167,13 +169,13 @@ void request_handler::handle_request(const request& req, reply& rep)
 	}
 
 	ControllerOutput output;
-	(*methodRef)(icontroller, sessionId, argumentsMap, output);
+	(*methodRef)(icontroller, sessionWeak, argumentsMap, output);
 
 	rep.content = output.GetBody();
 	icontroller->EndAction();
 
 #ifdef WITH_COOKIE
-    rep.headers.resize(2 + int32(sessionKey.empty() || sessionKey != sessionId.Key));
+    rep.headers.resize(2 + int32(sessionKey.empty() || sessionKey != session->Id.Key));
 #else
     rep.headers.resize(2);
 #endif
@@ -184,10 +186,10 @@ void request_handler::handle_request(const request& req, reply& rep)
     //rep.headers[1].value = mime_types::extension_to_type(extension);
 
 #ifdef WITH_COOKIE
-    if(sessionKey.empty() || sessionKey != sessionId.Key)
+    if(sessionKey.empty() || sessionKey != session->Id.Key)
     {
         rep.headers[2].name = "Set-Cookie";
-        rep.headers[2].value = "RMID=" + sessionId.Key + ";";
+        rep.headers[2].value = "RMID=" + session->Id.Key + ";";
     }
 #endif
 }

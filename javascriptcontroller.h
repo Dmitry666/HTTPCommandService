@@ -42,7 +42,7 @@ public:
      * @return validation success.
 	 */
 	virtual bool Validate(class IController* obj,
-		const SessionId& sessionId,
+		SessionWeak session,
 		const ControllerArguments& arguments) override;
 
     /**
@@ -53,7 +53,7 @@ public:
      * @param contents out content.
      */
 	virtual void Execute(class IController* obj,
-		const SessionId& sessionId,
+		SessionWeak session,
 		const ControllerArguments& arguments,
 		ControllerOutput& contents) override;
 
@@ -91,11 +91,11 @@ public:
 	 * @param arguments input arguments.
      * @return validation success.
      */
-	virtual bool Validate(const SessionId& sessionId, const ControllerArguments& arguments) override;
+	virtual bool Validate(SessionWeak session, const ControllerArguments& arguments) override;
 
 	bool ValidateExecute(
             v8::Persistent<v8::Function>& validate,
-            const SessionId& sessionId,
+            SessionWeak session,
             const ControllerArguments& arguments);
 
     /**
@@ -107,7 +107,7 @@ public:
      */
     bool ActionExecute(
             v8::Persistent<v8::Function>& action,
-            const SessionId& sessionId,
+            SessionWeak session,
             const ControllerArguments& arguments,
             ControllerOutput& outContent);
 

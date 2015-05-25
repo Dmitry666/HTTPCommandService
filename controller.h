@@ -2,6 +2,7 @@
 #define HTTP_CONTROLLER_H
 
 #include "common.h"
+#include "sessionmanager.h"
 
 namespace openrc {
 
@@ -69,39 +70,6 @@ private:
 	std::string _body;
 };
 
-//typedef std::string ControllerOutput;
-
-typedef std::string SessionKey;
-
-/**
- * @brief Session identificator struct.
- */
-struct SessionId
-{
-    int32 Id;
-    SessionKey Key;
-
-    SessionId()
-        : Id(-1)
-    {}
-
-    SessionId(const SessionId& sessionId)
-        : Id(sessionId.Id)
-        , Key(sessionId.Key)
-    {}
-
-    bool IsValid() const
-    {
-        return Id != -1;
-    }
-
-    SessionId& operator = (const SessionId& sessionId)
-    {
-        Id = sessionId.Id;
-        Key = sessionId.Key;
-        return (*this);
-    }
-};
 
 #define CONTROLLER_REGISTER(classname, textName, description) \
 private: \
@@ -127,7 +95,7 @@ public: \
     \
     virtual bool Construct() override; \
     virtual const char* ClassName() { return GetClassNameStatic(); } \
-    virtual bool Validate(const SessionId& sessionId, const ControllerArguments& arguments) override;\
+    virtual bool Validate(SessionWeak session, const ControllerArguments& arguments) override;\
     /*virtual void RegisterMethods();*/ \
     static const char* GetClassNameStatic() { return textName; } \
 private:
@@ -137,7 +105,7 @@ private:
     const TControllerRegistrar<classname, ControllerManager> classname::creator##classname;
 
 #define CONTROLLER_ACTION(classname, methodname) \
-    void methodname(const SessionId& sessionId, const ControllerArguments& arguments, ControllerOutput& outContents); \
+    void methodname(SessionWeak session, const ControllerArguments& arguments, ControllerOutput& outContents); \
     static const TMethodRegistrar<classname> creator##classname##methodname;
 
 #define CONTROLLER_ACTIONIMPL(classname, methodname, actionname, description) \
@@ -146,8 +114,8 @@ private:
 
 
 #define CONTROLLER_ACTIONVALIDATE(classname, methodname) \
-    void methodname(const SessionId& sessionId, const ControllerArguments& arguments, ControllerOutput& outContents); \
-    bool methodname##Validate(const SessionId& sessionId, const ControllerArguments& arguments); \
+    void methodname(SessionWeak session, const ControllerArguments& arguments, ControllerOutput& outContents); \
+    bool methodname##Validate(SessionWeak session, const ControllerArguments& arguments); \
     static const TMethodRegistrar<classname> creator##classname##methodname;
 
 #define CONTROLLER_ACTIONVALIDATEIMPL(classname, methodname, actionname, description) \
@@ -193,7 +161,7 @@ public:
      * @return validation success.
      */
     virtual bool Validate(class IController* obj,
-                          const SessionId& sessionId,
+                          SessionWeak session,
                           const ControllerArguments& arguments) = 0;
 
     /**
@@ -204,7 +172,7 @@ public:
      * @param contents out content.
      */
     virtual void Execute(class IController* obj,
-                         const SessionId& sessionId,
+                         SessionWeak session,
                          const ControllerArguments& arguments,
                          ControllerOutput& contents) = 0;
 
@@ -217,11 +185,11 @@ public:
      * @return controller method reference.
      */
     ControllerMethod& operator ()(class IController* obj,
-                                  const SessionId& sessionId,
+                                  SessionWeak session,
                                   const ControllerArguments& arguments,
                                   ControllerOutput& contents)
     {
-        this->Execute(obj, sessionId, arguments, contents);
+        this->Execute(obj, session, arguments, contents);
         return (*this);
     }
 
@@ -243,11 +211,11 @@ class TControllerMethod : public ControllerMethod
 {
 public:
 #ifdef _MSC_VER
-    typedef void(ClassType::*FunctionType)(const SessionId&, const ControllerArguments&, ControllerOutput& outContent);
-    typedef bool(ClassType::*ValidateType)(const SessionId&, const ControllerArguments&);
+    typedef void(ClassType::*FunctionType)(SessionWeak session, const ControllerArguments&, ControllerOutput& outContent);
+    typedef bool(ClassType::*ValidateType)(SessionWeak session, const ControllerArguments&);
 #else
-    typedef std::function<void(ClassType&, const SessionId&, const ControllerArguments&, ControllerOutput& outContent)> FunctionType;
-    typedef std::function<bool(ClassType&, const SessionId&, const ControllerArguments&)> ValidateType;
+    typedef std::function<void(ClassType&, SessionWeak session, const ControllerArguments&, ControllerOutput& outContent)> FunctionType;
+    typedef std::function<bool(ClassType&, SessionWeak session, const ControllerArguments&)> ValidateType;
 #endif
 
 public:
@@ -266,16 +234,16 @@ public:
     }
 
     virtual bool Validate(class IController* obj,
-                          const SessionId& sessionId,
+                          SessionWeak session,
                           const ControllerArguments& arguments) override
     {
         if(_validate)
         {
             ClassType* class_ = static_cast<ClassType*>(obj);
 #ifdef _MSC_VER
-            return (class_->*_validate)(sessionId, arguments);
+            return (class_->*_validate)(session, arguments);
 #else
-            return _validate(*class_, sessionId, arguments);
+            return _validate(*class_, session, arguments);
 #endif
         }
 
@@ -283,16 +251,16 @@ public:
     }
 
     virtual void Execute(class IController* obj,
-                         const SessionId& sessionId,
+                         SessionWeak session,
                          const ControllerArguments& arguments,
                          ControllerOutput& contents) override
     {
         ClassType* class_ = static_cast<ClassType*>(obj);
 
 #ifdef _MSC_VER
-        (class_->*_function)(sessionId, arguments, contents);
+        (class_->*_function)(session, arguments, contents);
 #else
-        _function(*class_, sessionId, arguments, contents);
+        _function(*class_, session, arguments, contents);
 #endif
     }
 
@@ -334,9 +302,9 @@ public:
 	 * @param arguments input arguments.
      * @return validation success.
      */
-    virtual bool Validate(const SessionId& sessionId, const ControllerArguments& arguments)
+    virtual bool Validate(SessionWeak session, const ControllerArguments& arguments)
     {
-        UNUSED(sessionId)
+        UNUSED(session)
         UNUSED(arguments)
         return true;
     }
@@ -358,8 +326,8 @@ public:
     template<typename ClassType>
     void TRegisterMethod(const std::string& name,
                          const std::string& description,
-                         void(ClassType:: *method)(const SessionId&, const ControllerArguments&, ControllerOutput& outContent),
-                         bool(ClassType:: *validate)(const SessionId&, const ControllerArguments&) = nullptr)
+                         void(ClassType:: *method)(SessionWeak, const ControllerArguments&, ControllerOutput& outContent),
+                         bool(ClassType:: *validate)(SessionWeak, const ControllerArguments&) = nullptr)
     {
         typename TControllerMethod<ClassType>::FunctionType actionFunc = method;
         typename TControllerMethod<ClassType>::ValidateType validateFunc =
@@ -376,7 +344,7 @@ public:
      */
     virtual bool ActionExecute(
             const std::string& actionName,
-            const SessionId& sessionId,
+            SessionWeak session,
             const ControllerArguments& arguments,
             ControllerOutput& outContent)
     {
@@ -386,7 +354,7 @@ public:
             return false;
         }
 
-        (*methodRef)(this, sessionId, arguments, outContent);
+        (*methodRef)(this, session, arguments, outContent);
         return true;
     }
 
@@ -467,8 +435,8 @@ class TMethodRegistrar
 public:
     TMethodRegistrar(const std::string& name,
                      const std::string& description,
-                     void(ClassType:: *function)(const SessionId&, const ControllerArguments&, ControllerOutput&),
-                     bool(ClassType:: *validate)(const SessionId&, const ControllerArguments&) = nullptr
+                     void(ClassType:: *function)(SessionWeak session, const ControllerArguments&, ControllerOutput&),
+                     bool(ClassType:: *validate)(SessionWeak session, const ControllerArguments&) = nullptr
                      )
     {
         IController* controller = ControllerManager::Get<ClassType>();

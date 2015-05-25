@@ -44,20 +44,20 @@ public:
 namespace openrc {
 
 bool JavaScriptControllerMethod::Validate(class IController* obj,
-                        const SessionId& sessionId,
+                        SessionWeak session,
                         const ControllerArguments& arguments)
 {
 	JavascriptController* class_ = static_cast<JavascriptController*>(obj);
-    return class_->ValidateExecute(validator_, sessionId, arguments);
+    return class_->ValidateExecute(validator_, session, arguments);
 }
 
 void JavaScriptControllerMethod::Execute(class IController* obj,
-                        const SessionId& sessionId,
+                        SessionWeak session,
                         const ControllerArguments& arguments,
                         ControllerOutput& outContent)
 {
     JavascriptController* class_ = static_cast<JavascriptController*>(obj);
-	class_->ActionExecute(function_, sessionId, arguments, outContent);
+	class_->ActionExecute(function_, session, arguments, outContent);
 }
 
 bool JavascriptController::Construct()
@@ -255,7 +255,7 @@ bool JavascriptController::EndAction()
 	return true;
 }
 
-bool JavascriptController::Validate(const SessionId& sessionId, const ControllerArguments& arguments) 
+bool JavascriptController::Validate(SessionWeak session, const ControllerArguments& arguments) 
 {
 	Isolate::Scope isolate_scope(isolate_);
 	HandleScope scope(isolate_);
@@ -305,7 +305,7 @@ bool JavascriptController::Validate(const SessionId& sessionId, const Controller
 
 bool JavascriptController::ValidateExecute(
 	Persistent<Function>& validate_per,
-	const SessionId& sessionId,
+	SessionWeak session,
 	const ControllerArguments& arguments)
 {
 	Isolate::Scope isolate_scope(isolate_);
@@ -356,7 +356,7 @@ bool JavascriptController::ValidateExecute(
 
 bool JavascriptController::ActionExecute(
 	Persistent<Function>& action_per,
-	const SessionId& sessionId,
+	SessionWeak session,
 	const ControllerArguments& arguments,
 	ControllerOutput& outContent)
 {

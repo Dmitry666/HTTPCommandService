@@ -13,7 +13,7 @@ bool HttpTestController::Construct()
 }
 
 CONTROLLER_ACTIONIMPL(HttpTestController, DoAction, "DoAction", "Request http.")
-void HttpTestController::DoAction(const SessionId& sessionId, const ControllerArguments& arguments, ControllerOutput& outContent)
+void HttpTestController::DoAction(SessionWeak session, const ControllerArguments& arguments, ControllerOutput& outContent)
 {
 	const std::string url = arguments["url"];
 

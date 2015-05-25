@@ -9,12 +9,12 @@
 //
 
 #include "tcp_request_handler.hpp"
+#include "tcp_reply.hpp"
+#include "tcp_request.hpp"
+
 #include <fstream>
 #include <sstream>
 #include <string>
-
-//#include "reply.hpp"
-//#include "request.hpp"
 
 #include "../controller.h"
 #include "../sessionmanager.h"
@@ -46,7 +46,58 @@ request_handler::request_handler(const string& doc_root)
 
 void request_handler::handle_request(const request& req, reply& rep)
 {
+	const string& controllerName = req.controller;
+	const string& method = req.method;
+	const map<string, string> argumentsMap = req.arguments;
 
+	IController* icontroller = ControllerManager::FindController(controllerName);
+	if(icontroller == nullptr)
+	{
+		//handle_request_page(request_path, req, rep);
+		return;
+	}
+
+	if( !icontroller->BeginAction() )
+	{
+		//rep = reply::stock_reply(reply::not_found);
+		return;
+	}
+
+	ControllerMethodRef methodRef = icontroller->FindMethod(method);
+	if( methodRef == nullptr )
+	{
+		//rep = reply::stock_reply(reply::not_found);
+		return;
+	}
+
+	SessionKey sessionKey;
+	SessionWeak sessionWeak = sessionKey.empty() ?
+				SessionManager::NewSession() :
+				SessionManager::FindSessionByKey(sessionKey);
+
+	if(sessionWeak.expired())
+	{
+		sessionWeak = SessionManager::NewSession();
+	}
+
+	SessionShared session = sessionWeak.lock();
+
+	bool validate = methodRef->IsValidateMethod() ? methodRef->Validate(icontroller, sessionWeak, argumentsMap) :
+			icontroller->Validate(sessionWeak, argumentsMap);
+
+	if(!validate)
+	{
+		//rep = reply::stock_reply(reply::not_found);
+		return;
+	}
+
+	ControllerOutput output;
+	(*methodRef)(icontroller, sessionWeak, argumentsMap, output);
+
+	//rep.content = output.GetBody();
+	icontroller->EndAction();
+
+	// rep
 }
 
 bool request_handler::url_decode(const std::string& in, std::string& out)

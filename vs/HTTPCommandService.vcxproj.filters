@@ -13,18 +13,21 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="HTTP">
+      <UniqueIdentifier>{266158e6-6728-4b00-92ca-c81b4ae1eeb4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WebSocket">
+      <UniqueIdentifier>{58d26850-ff52-4168-9a58-58375130e3e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TcpNative">
+      <UniqueIdentifier>{d1dab293-8230-478e-ada9-d2cfb64774af}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\common-private.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\connection.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\connection_manager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\controller.h">
@@ -42,9 +45,6 @@
     <ClInclude Include="..\fileinfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\header.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\helpcontroller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -57,37 +57,13 @@
     <ClInclude Include="..\javascriptmanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\mime_types.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\module.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\modulemanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\reply.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\request.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\request_handler.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\request_parser.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\server.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\sessionmanager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\sslconnection.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\sslserver.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\js-http-request-processor.h">
@@ -96,14 +72,89 @@
     <ClInclude Include="..\service-config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\http\connection.hpp">
+      <Filter>HTTP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\http\connection_manager.hpp">
+      <Filter>HTTP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\http\mime_types.hpp">
+      <Filter>HTTP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\http\reply.hpp">
+      <Filter>HTTP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\http\request.hpp">
+      <Filter>HTTP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\http\request_handler.hpp">
+      <Filter>HTTP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\http\request_parser.hpp">
+      <Filter>HTTP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\http\server.hpp">
+      <Filter>HTTP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\http\sslconnection.hpp">
+      <Filter>HTTP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\http\sslserver.hpp">
+      <Filter>HTTP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\http\header.hpp">
+      <Filter>HTTP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\websocket\web_connection_manager.hpp">
+      <Filter>WebSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\tcpnative\tcp_connection_manager.hpp">
+      <Filter>TcpNative</Filter>
+    </ClInclude>
+    <ClInclude Include="..\tcpnative\tcp_request_handler.hpp">
+      <Filter>TcpNative</Filter>
+    </ClInclude>
+    <ClInclude Include="..\websocket\web_request_handler.hpp">
+      <Filter>WebSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\websocket\web_connection.hpp">
+      <Filter>WebSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\websocket\web_server.hpp">
+      <Filter>WebSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\tcpnative\tcp_connection.hpp">
+      <Filter>TcpNative</Filter>
+    </ClInclude>
+    <ClInclude Include="..\tcpnative\tcp_server.hpp">
+      <Filter>TcpNative</Filter>
+    </ClInclude>
+    <ClInclude Include="..\crypt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\websocket\web_reply.hpp">
+      <Filter>WebSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\websocket\web_request.hpp">
+      <Filter>WebSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\websocket\web_request_parser.hpp">
+      <Filter>WebSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\tcpnative\tcp_reply.hpp">
+      <Filter>TcpNative</Filter>
+    </ClInclude>
+    <ClInclude Include="..\tcpnative\tcp_request.hpp">
+      <Filter>TcpNative</Filter>
+    </ClInclude>
+    <ClInclude Include="..\tcpnative\tcp_request_parser.hpp">
+      <Filter>TcpNative</Filter>
+    </ClInclude>
+    <ClInclude Include="..\server.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\connection.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\connection_manager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\controller.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -128,37 +179,82 @@
     <ClCompile Include="..\javascriptmanager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\mime_types.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\modulemanager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\reply.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\request_handler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\request_parser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\server.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\sessionmanager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\sslconnection.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\sslserver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\js-http-request-processor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\service-config.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\http\connection.cpp">
+      <Filter>HTTP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\http\connection_manager.cpp">
+      <Filter>HTTP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\http\mime_types.cpp">
+      <Filter>HTTP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\http\reply.cpp">
+      <Filter>HTTP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\http\request_handler.cpp">
+      <Filter>HTTP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\http\request_parser.cpp">
+      <Filter>HTTP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\http\server.cpp">
+      <Filter>HTTP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\http\sslconnection.cpp">
+      <Filter>HTTP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\http\sslserver.cpp">
+      <Filter>HTTP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\websocket\web_connection_manager.cpp">
+      <Filter>WebSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tcpnative\tcp_connection_manager.cpp">
+      <Filter>TcpNative</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tcpnative\tcp_request_handler.cpp">
+      <Filter>TcpNative</Filter>
+    </ClCompile>
+    <ClCompile Include="..\websocket\web_request_handler.cpp">
+      <Filter>WebSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\websocket\web_connection.cpp">
+      <Filter>WebSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\websocket\web_server.cpp">
+      <Filter>WebSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tcpnative\tcp_connection.cpp">
+      <Filter>TcpNative</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tcpnative\tcp_server.cpp">
+      <Filter>TcpNative</Filter>
+    </ClCompile>
+    <ClCompile Include="..\websocket\web_reply.cpp">
+      <Filter>WebSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\websocket\web_request_parser.cpp">
+      <Filter>WebSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tcpnative\tcp_reply.cpp">
+      <Filter>TcpNative</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tcpnative\tcp_request_parser.cpp">
+      <Filter>TcpNative</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common-private.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

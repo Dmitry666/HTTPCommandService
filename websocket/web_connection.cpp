@@ -12,6 +12,9 @@
 #include <boost/archive/iterators/insert_linebreaks.hpp>
 #include <boost/archive/iterators/transform_width.hpp>
 #include <boost/archive/iterators/ostream_iterator.hpp>
+
+//#include <boost/bind.hpp>
+
 #include <sstream>
 #include <string>
 
@@ -329,40 +332,36 @@ void connection :: start()
 					//! memcpy(_sendData.data(), boost::asio::buffer_cast<const char*>( request.data()), request.size());
 
 					// reply_ = 
-					do_write();
-#if 0
+					//do_write();
+					memcpy(buffer_.data(), boost::asio::buffer_cast<const char*>( request.data()), request.size()); 
+
+					auto self(shared_from_this());
 					boost::asio::async_write(socket_,
-						boost::asio::buffer(_sendData, request.size()),
-						make_custom_alloc_handler(allocator_,
-						boost::bind(&connection::handle_write,shared_from_this(),boost::asio::placeholders::error))
-						);
-#endif
+						boost::asio::buffer(buffer_, request.size()),
+						[this, self](boost::system::error_code ec, std::size_t)
+						{
+							if (!ec)
+							{
+								do_read();
+								// Initiate graceful connection closure.
+								//boost::system::error_code ignored_ec;
+								//socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
+							}
+
+							if (ec != boost::asio::error::operation_aborted)
+							{
+								connection_manager_.stop(self);
+								return;
+							}
+
+							
+						});
 				}
 				else
 				{
 					// reply_ = reply::stock_reply(reply::bad_request); TODO> Error.
                     do_write();
 				}
-#if 0
-                request_parser::result_type result;
-                std::tie(result, std::ignore) = request_parser_.parse(
-                    request_, buffer_.data(), buffer_.data() + bytes_transferred);
-
-                if (result == request_parser::good)
-                {
-                    request_handler_.handle_request(request_, reply_);
-                    do_write();
-                }
-                else if (result == request_parser::bad)
-                {
-                    reply_ = reply::stock_reply(reply::bad_request);
-                    do_write();
-                }
-                else
-                {
-                    do_read();
-                }
-#endif
             }
             else if (ec != boost::asio::error::operation_aborted)
             {
@@ -405,7 +404,7 @@ void connection::do_read()
 								boost::asio::buffer(buffer_, size + header.mask * 4),
 								[this, self, header](boost::system::error_code error, std::size_t bytes_transferred)
 								{
-									// Read data.
+									handle_read_data(header, error, bytes_transferred);
 								});
 						});
 				}
@@ -421,15 +420,15 @@ void connection::do_read()
 								return;
 							}
 
-							/*UINT size;
-							memcpy(&size, _inData.data(), sizeof(UINT));
+							uint32_t size;
+							memcpy(&size, buffer_.data(), sizeof(UINT));
 
 							boost::asio::async_read(socket_,
-								boost::asio::buffer(_inData, size + header.mask * 4),
-								make_custom_alloc_handler(
-								allocator_,
-								boost::bind(&session::handle_read_data, shared_from_this(), header, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred)
-								));*/
+								boost::asio::buffer(buffer_, size + header.mask * 4),
+								[this, self, header](boost::system::error_code error, std::size_t bytes_transferred)
+								{
+									handle_read_data(header, error, bytes_transferred);
+								});
 						}
 					);
 				}
@@ -439,13 +438,14 @@ void connection::do_read()
 						boost::asio::buffer(buffer_, header.leght + header.mask * 4),
 						[this, self, header](boost::system::error_code error, std::size_t bytes_transferred)
 						{
-							// Data.
+							handle_read_data(header, error, bytes_transferred);
 						});
 				}
                 else
                 {
 					// ????
                     //do_read();
+					connection_manager_.stop(shared_from_this());
                 }
             }
             else if (ec != boost::asio::error::operation_aborted)
@@ -457,46 +457,72 @@ void connection::do_read()
 
 void connection::do_write()
 {
-    auto self(shared_from_this());
 #if 0
+    uint32_t allSize = 0;
+	//for(SendBuffer& buf : _outBuffers)
+	//	allSize += 8 + buf.Writer.GetSize();
+
+	BYTE* data;
+    uint16_t header;
+	if(allSize < 126)
+	{
+		header = make_header(1, 0x2, 0, allSize);
+        memcpy(_sendData.data(), &header, sizeof(uint16_t));
+        data = _sendData.data() + sizeof(uint16_t);
+
+        allSize += sizeof(uint16_t);
+	}
+	else
+	{
+        uint16_t shotSize = allSize;
+		header = make_header(1, 0x2, 0, 126);
+        memcpy(_sendData.data(), &header, sizeof(uint16_t));
+
+		BYTE* b = reinterpret_cast<BYTE*>(&shotSize);
+			
+        memcpy(_sendData.data() + sizeof(uint16_t), &b[1], sizeof(BYTE));
+        memcpy(_sendData.data() + sizeof(uint16_t) + sizeof(BYTE), &b[0], sizeof(BYTE));
+		//memcpy(_sendData.data() + sizeof(USHORT), &b, sizeof(USHORT));
+        data = _sendData.data() + 2 * sizeof(uint16_t);
+
+        allSize += 2 * sizeof(uint16_t);
+
+	}
+#endif
+
+    auto self(shared_from_this());
     boost::asio::async_write(socket_, reply_.to_buffers(),
         [this, self](boost::system::error_code ec, std::size_t)
         {
             if (!ec)
             {
                 // Initiate graceful connection closure.
-                boost::system::error_code ignored_ec;
-                socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
+				do_read();
+                //boost::system::error_code ignored_ec;
+                //socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
             }
 
             if (ec != boost::asio::error::operation_aborted)
             {
                 connection_manager_.stop(shared_from_this());
+				return;
             }
-        });
-#endif
-}
 
-#if 0
+			
+        });
+}
 
 void connection :: handle_read_data(WebHeader header, const boost::system::error_code& e, std::size_t bytes_transferred)
 {
-    /*
-    if(e)
-    {
-        socket_.close();
-        return;
-    }
+    uint32_t offset = 0;
 
-    uint32 offset = 0;
-
-    uint32 bytes = bytes_transferred;
+    uint32_t bytes = bytes_transferred;
     if(header.mask)
     {
         bytes -= 4;
 
-        UINT mask = *reinterpret_cast<uint32*>(_inData.data());
-        unsigned char* c = _inData.data() + 4;
+        UINT mask = *reinterpret_cast<uint32_t*>(buffer_.data());
+        unsigned char* c = (unsigned char*)buffer_.data() + 4;
         for(int i=0; i<bytes; i++)
             c[i] = c[i] ^ ((unsigned char*)(&mask))[i%4];
 
@@ -504,12 +530,13 @@ void connection :: handle_read_data(WebHeader header, const boost::system::error
     }
 
 
-    BYTE* data = _inData.data() + offset;
+    //char* data = buffer_.data() + offset;
 
+#if 0
     if( header.opcode == 9 ) // this is ping
     {
         // Send pong.
-        int16 header = make_header(1, 0xA, 0, bytes);
+        int16_t header = make_header(1, 0xA, 0, bytes);
 
         memcpy(_sendData.data(), &header, sizeof(uint16));
         memcpy(_sendData.data() + sizeof(uint16), data, bytes);
@@ -528,104 +555,46 @@ void connection :: handle_read_data(WebHeader header, const boost::system::error
     {
         return;
     }
-
-
-    uint32 offsetData = 0;
-
-    BYTE* local = data;
-    int32 command = *reinterpret_cast<int32*>(local);
-    offsetData += sizeof(int32);
-
-    int32 size = *reinterpret_cast<int32*>(local + offsetData);
-    offsetData += sizeof(int32);
-
-    switch (command)
-    {
-    case NET_MESSAGE:
-        {
-            try
-            {
-                BYTE* local = data + offsetData;
-                BufferReader reader(local, size);
-
-                if( _listener)
-                {
-                    if(!_listener->callMessage(_id, reader))
-                    {}
-                }
-            }
-            catch (std::exception &e)
-            {
-                ErrorStream::write("%s", e.what());
-            }
-
-            do_write();
-
-            break;
-        }
-    case NET_CALLFUNCTION:
-        {
-            try
-            {
-                BYTE* local = data + offsetData;
-                BufferReader reader(local, size);
-
-                if( _listener)
-                    _listener->callFunction(_id, reader);
-            }
-            catch (std::exception &e)
-            {
-                ErrorStream::write("%s", e.what());
-            }
-
-            do_write();
-
-            break;
-        }
-    case NET_CMD_UPDATE:
-        {
-            do_write();
-
-            break;
-        }
-    case NET_GET_TIME:
-        {
-            int32 answer = NET_TIME, zero = 8;
-
-            uint16 header = make_header(1, 0x2, 0, 16);
-            memcpy(_sendData.data(), &header, sizeof(USHORT));
-
-            double timer = GlobalTime::getTime();
-            memcpy(_sendData.data() + sizeof(uint16), &answer, sizeof(int32));
-            memcpy(_sendData.data() + sizeof(uint16) + sizeof(int32), &zero, sizeof(int32));
-            memcpy(_sendData.data() + sizeof(uint16) + 2 * sizeof(int32), &timer, sizeof(double));
-
-            boost::asio::async_write(socket_,
-                boost::asio::buffer(_sendData, 2 + 8 + 8),
-                make_custom_alloc_handler(allocator_,
-                boost::bind(&connection::handle_write,shared_from_this(),boost::asio::placeholders::error))
-                );
-
-            break;
-        }
-    default:
-        {
-            // _server->RemoveSession(this);
-#ifdef _DEBUG
-            char text[4096];
-            memset(text, 0, 4096);
-            memcpy(text, data, bytes);
-
-            printf("Bad command: %s", text);
-
-            do_read();
-#else
-            socket_.close();
 #endif
-        }
-    }*/
+
+    uint32_t offsetData = 0;
+
+	int16_t size = header.leght;
+		//*reinterpret_cast<int16_t*>(data + offsetData);
+    //offsetData += sizeof(int16_t);
+
+    request_parser::result_type result;
+    std::tie(result, std::ignore) = request_parser_.parse(
+        request_, buffer_.data() + offset, buffer_.data() + offset + bytes_transferred);
+
+	reply_.reset();
+    if (result == request_parser::good)
+    {
+		if(request_.command == "command")
+		{
+			request_handler_.handle_request(request_, reply_);
+		}
+		else if(request_.command == "update")
+		{}
+		else
+		{
+			reply_ = reply::stock_reply(reply::bad_request);
+		}
+
+        do_write();
+    }
+    else if (result == request_parser::bad)
+    {
+        reply_ = reply::stock_reply(reply::bad_request);
+        do_write();
+    }
+    else
+    {
+        do_read();
+    }
 }
 
+#if 0
 void connection :: handle_read_header(const boost::system::error_code& error)
 {
     if(error)

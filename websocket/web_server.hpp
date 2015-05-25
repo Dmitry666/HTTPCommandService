@@ -11,22 +11,40 @@
 #include "web_connection_manager.hpp"
 #include "web_request_handler.hpp"
 
+#include "../server.h"
 /*
 Project.GetFile(filename="baba/aaa.gxs", type="dsfsd")
 Update
 
-
-{
-	command: "Project.GetFile",
-	params: {
-		key: value,
-		key2: value2,
-		...
+// Input Body
+[
+	{
+		command: "Project.GetFile",
+		params: {
+			key: value,
+			key2: value2,
+			...
+		}
 	}
+]
+
+// Input Commands.
+{
+	code: "CM"
+	body: ""	
 }
 
+{
+	code: "Update"
+	body: ""
+}
 
+{
+	code: "Success",
+	body: ""
+}
 
+// Output body.
 [
 	{
 		command: "Project.GetFile",
@@ -40,7 +58,6 @@ Update
 	}
 	
 ]
-
 */
 namespace openrc {
 namespace websocket {
@@ -48,7 +65,7 @@ namespace websocket {
 /**
     Main net server class.
 */
-class web_server
+class web_server : public base_server
 {
 public:
     web_server(const web_server&) = delete;
@@ -59,9 +76,9 @@ public:
     explicit web_server(const std::string& address, const std::string& port, const std::string& doc_root);
 
     /// Run the server's io_service loop.
-    void run();
+    virtual void run() override;
 
-	void stop();
+	virtual void stop() override;
 
 private:
     /// Perform an asynchronous accept operation.

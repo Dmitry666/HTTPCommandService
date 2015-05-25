@@ -23,10 +23,10 @@
 
 namespace openrc {
 
-std::map<SessionKey, SessionId> _sessions;
+std::map<SessionKey, SessionShared> _sessions;
 int32 _lastSessionId = -1;
 
-SessionId SessionManager::NewSession()
+SessionWeak SessionManager::NewSession()
 {
     SessionId sessionId;
     sessionId.Id = ++_lastSessionId;
@@ -34,11 +34,13 @@ SessionId SessionManager::NewSession()
     boost::uuids::uuid tag = boost::uuids::random_generator()();
     sessionId.Key = boost::lexical_cast<std::string>(tag);
 
-    _sessions.insert(std::make_pair(sessionId.Key, sessionId));
-    return sessionId;
+	auto session = std::make_shared<Session>(sessionId);
+    _sessions.insert(std::make_pair(sessionId.Key, session));
+  
+	return session;
 }
 
-SessionId SessionManager::FindSessionByKey(const SessionKey& key)
+SessionWeak SessionManager::FindSessionByKey(const SessionKey& key)
 {
     auto it = _sessions.find(key);
     if(it != _sessions.end())

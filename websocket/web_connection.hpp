@@ -80,6 +80,8 @@ private:
     /// Perform an asynchronous write operation.
     void do_write();
 
+	void handle_read_data(WebHeader header, const boost::system::error_code& e, std::size_t bytes_transferred);
+
 private:
     /// Socket for the connection.
     boost::asio::ip::tcp::socket socket_;

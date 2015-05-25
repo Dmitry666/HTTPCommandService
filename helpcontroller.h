@@ -17,10 +17,10 @@ public:
     CONTROLLER_ACTIONVALIDATE(HelpController, ShowControllers)
 
 private:
-    void ShowControllersText(const SessionId& sessionId, const ControllerArguments& arguments, ControllerOutput& content);
-    void ShowControllersHTML(const SessionId& sessionId, const ControllerArguments& arguments, ControllerOutput& content);
-    void ShowControllersJSON(const SessionId& sessionId, const ControllerArguments& arguments, ControllerOutput& content);
-    void ShowControllersXML(const SessionId& sessionId, const ControllerArguments& arguments, ControllerOutput& content);
+    void ShowControllersText(SessionWeak session, const ControllerArguments& arguments, ControllerOutput& content);
+    void ShowControllersHTML(SessionWeak session, const ControllerArguments& arguments, ControllerOutput& content);
+    void ShowControllersJSON(SessionWeak session, const ControllerArguments& arguments, ControllerOutput& content);
+    void ShowControllersXML(SessionWeak session, const ControllerArguments& arguments, ControllerOutput& content);
 };
 
 } // End http.

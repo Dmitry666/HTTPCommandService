@@ -15,24 +15,24 @@ bool HelpController::Construct()
     return true;
 }
 
-bool HelpController::Validate(const SessionId& sessionId, const ControllerArguments& arguments)
+bool HelpController::Validate(SessionWeak session, const ControllerArguments& arguments)
 {
-    UNUSED(sessionId)
+    UNUSED(session)
     UNUSED(arguments)
 
     return true;
 }
 
 CONTROLLER_ACTIONVALIDATEIMPL(HelpController, ShowControllers, "ShowControllers", "Print all controller with their actions.")
-bool HelpController::ShowControllersValidate(const SessionId& sessionId, const ControllerArguments& arguments)
+bool HelpController::ShowControllersValidate(SessionWeak session, const ControllerArguments& arguments)
 {
-    UNUSED(sessionId)
+    UNUSED(session)
     UNUSED(arguments)
 
     return true;
 }
 
-void HelpController::ShowControllers(const SessionId& sessionId, const ControllerArguments& arguments, ControllerOutput& outContent)
+void HelpController::ShowControllers(SessionWeak session, const ControllerArguments& arguments, ControllerOutput& outContent)
 {
     enum OutputFormat
     {
@@ -61,21 +61,21 @@ void HelpController::ShowControllers(const SessionId& sessionId, const Controlle
     switch (outputFormat)
     {
     case OF_Text:
-        ShowControllersText(sessionId, arguments, outContent);
+        ShowControllersText(session, arguments, outContent);
         break;
     case OF_Html:
-        ShowControllersHTML(sessionId, arguments, outContent);
+        ShowControllersHTML(session, arguments, outContent);
         break;
     case OF_Json:
-        ShowControllersJSON(sessionId, arguments, outContent);
+        ShowControllersJSON(session, arguments, outContent);
         break;
     case OF_Xml:
-        ShowControllersXML(sessionId, arguments, outContent);
+        ShowControllersXML(session, arguments, outContent);
         break;
     }
 }
 
-void HelpController::ShowControllersText(const SessionId& sessionId, const ControllerArguments& arguments, ControllerOutput& outContent)
+void HelpController::ShowControllersText(SessionWeak session, const ControllerArguments& arguments, ControllerOutput& outContent)
 {
     //UNUSED(sessionId)
     //UNUSED(arguments)
@@ -103,9 +103,9 @@ void HelpController::ShowControllersText(const SessionId& sessionId, const Contr
     }
 }
 
-void HelpController::ShowControllersHTML(const SessionId& sessionId, const ControllerArguments& arguments, ControllerOutput& outContent)
+void HelpController::ShowControllersHTML(SessionWeak session, const ControllerArguments& arguments, ControllerOutput& outContent)
 {
-    UNUSED(sessionId)
+    UNUSED(session)
     UNUSED(arguments)
 
 #ifdef WITH_CTPP
@@ -115,9 +115,9 @@ void HelpController::ShowControllersHTML(const SessionId& sessionId, const Contr
 #endif
 }
 
-void HelpController::ShowControllersJSON(const SessionId& sessionId, const ControllerArguments& arguments, ControllerOutput& outContent)
+void HelpController::ShowControllersJSON(SessionWeak session, const ControllerArguments& arguments, ControllerOutput& outContent)
 {
-    UNUSED(sessionId)
+    UNUSED(session)
     UNUSED(arguments)
 
 #ifdef WITH_JSONCPP
@@ -157,9 +157,9 @@ void HelpController::ShowControllersJSON(const SessionId& sessionId, const Contr
 #endif
 }
 
-void HelpController::ShowControllersXML(const SessionId& sessionId, const ControllerArguments& arguments, ControllerOutput& outContent)
+void HelpController::ShowControllersXML(SessionWeak session, const ControllerArguments& arguments, ControllerOutput& outContent)
 {
-    UNUSED(sessionId)
+    UNUSED(session)
     UNUSED(arguments)
 
 #ifdef WITH_TINYXML2

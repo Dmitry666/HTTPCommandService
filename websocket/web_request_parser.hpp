@@ -25,17 +25,20 @@ public:
     template <typename InputIterator>
     std::tuple<result_type, InputIterator> parse(request& req, InputIterator begin, InputIterator end)
     {
+		
         while (begin != end)
         {
-            result_type result = consume(req, *begin++);
+			std::string text(begin, end);
+            result_type result = parse_json(req, text);
             if (result == good || result == bad)
                 return std::make_tuple(result, begin);
         }
+
         return std::make_tuple(indeterminate, begin);
     }
 
 private:
-	result_type parse_json(const std::string& text);
+	result_type parse_json(request& req, const std::string& text);
 };
 
 } // namespace websocket

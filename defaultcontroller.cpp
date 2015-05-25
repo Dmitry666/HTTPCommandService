@@ -11,27 +11,29 @@ bool DefaultController::Construct()
     return true;
 }
 
-bool DefaultController::Validate(const SessionId& sessionId, const ControllerArguments& arguments) 
+bool DefaultController::Validate(SessionWeak session, const ControllerArguments& arguments) 
 {
-    UNUSED(sessionId)
+    UNUSED(session)
     UNUSED(arguments)
 
     return true;
 }
 
 CONTROLLER_ACTIONVALIDATEIMPL(DefaultController, Test, "Test", "Action from test.")
-bool DefaultController::TestValidate(const SessionId& sessionId, const ControllerArguments& arguments)
+bool DefaultController::TestValidate(SessionWeak session, const ControllerArguments& arguments)
 {
-    UNUSED(sessionId)
+    UNUSED(session)
     UNUSED(arguments)
 
     return true;
 }
 
-void DefaultController::Test(const SessionId& sessionId, const ControllerArguments& arguments, ControllerOutput& content)
+void DefaultController::Test(SessionWeak sessionWeak, const ControllerArguments& arguments, ControllerOutput& content)
 {
+	auto session = sessionWeak.lock();
+
     content.append("Default Controller: Hello. I am work.\n");
-    content.append("User: " + std::to_string(sessionId.Id) + ".\n");
+    content.append("User: " + std::to_string(session->Id.Id) + ".\n");
 
     for(auto& pair : arguments)
     {

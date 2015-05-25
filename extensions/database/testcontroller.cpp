@@ -13,7 +13,7 @@ bool DBTestController::Construct()
 }
 
 CONTROLLER_ACTIONIMPL(DBTestController, DoAction, "DoAction", "Request db.")
-void DBTestController::DoAction(const SessionId& sessionId, const ControllerArguments& arguments, ControllerOutput& outContent)
+void DBTestController::DoAction(SessionWeak session, const ControllerArguments& arguments, ControllerOutput& outContent)
 {
 	DBContext context;
 	context.SetType(arguments["type"]);

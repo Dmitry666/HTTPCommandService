@@ -20,19 +20,43 @@
 #endif
 
 #include "http/server.hpp"
+
+#ifdef WITH_WEBSOCKET
+#include "websocket/web_server.hpp"
+#endif
+
+#ifdef WITH_TCPNATIVE
+#include "tcpnative/tcp_server.hpp"
+#endif
+
 #include "modulemanager.h"
 #include "javascriptmanager.h"
 
 //using namespace openrc::http;
 using namespace std;
 
-thread _thread;
+std::vector<shared_ptr<thread>> _threads;
 
 
 namespace openrc {
-using namespace http;
 
-http::server::server* _s;
+vector<weak_ptr<base_server>> _servers;
+
+void RunServer(shared_ptr<base_server> _s)
+{
+    try
+    {
+        // Initialise the server.
+        //_s = new T(address, port, arguments["root"]);
+
+        // Run the server until stopped.
+        _s->run();
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << "exception: " << e.what() << "\n";
+    }
+}
 
 HttpService::HttpService(const HttpServiceArguments& arguments)
 	: _arguments(arguments)
@@ -52,35 +76,65 @@ HttpService::HttpService(const HttpServiceArguments& arguments)
 
 HttpService::~HttpService()
 {
+	_threads.clear();
+	_servers.clear();
+
 #ifdef WITH_JAVASCRIPT
 	JavascriptManager::Instance().Shutdown();
 #endif
     ModuleManager::Instance().ShutdownAll();
 }
 
-bool HttpService::Start(const std::string& address, const std::string& port)
+bool HttpService::Start(const string& address, const string& port)
 {
 	_address = address;
 	_port = port;
 
-    _thread = std::thread(&HttpService::Run, this);
+	// Jttp.
+	auto httpServer = make_shared<http::server::server>(_address, _port, _arguments["root"]);
+	_servers.push_back(httpServer);
+
+    auto thread = make_shared<std::thread>(&RunServer, httpServer);
+	_threads.push_back(thread);
+
+	// WebSocket
+	auto wsServer = make_shared<websocket::web_server>(_address, "80", _arguments["root"]);
+	_servers.push_back(wsServer);
+
+    auto wsThread = make_shared<std::thread>(&RunServer, wsServer);
+	_threads.push_back(wsThread);
+
     return true;
 }
 
 bool HttpService::Stop()
 {
-	_s->stop();
+	for(auto& serverWeak : _servers)
+	{
+		auto server = serverWeak.lock();
+		if(server)
+		{
+			server->stop();
+		}
+	}
+
     return true;
 }
 
 bool HttpService::Join(float time)
 {
-    _thread.join();
+	for(auto& thread : _threads)
+	{
+		thread->join();
+	}
+
     return true;
 }
 
+#if 0
 void HttpService::Run()
 {
+
     try
     {
         // Initialise the server.
@@ -96,6 +150,8 @@ void HttpService::Run()
 
     delete _s;
     _s = nullptr;
+
 }
+#endif
 
 } // End http.

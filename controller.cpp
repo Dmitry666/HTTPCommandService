@@ -7,7 +7,7 @@ using namespace std;
 
 namespace openrc {
 
-void ControllerOutput::Append(const std::string& value)
+void ControllerOutput::Append(const string& value)
 {
 	_body.append(value);
 }
@@ -74,7 +74,7 @@ IController* ControllerManager::FindController(const string& name)
     return nullptr;
 }
 
-IController* ControllerManager::GetController(const std::string& name)
+IController* ControllerManager::GetController(const string& name)
 {
     auto it = _controllers.find(ToLower(name));
     if(it != _controllers.end())
@@ -86,7 +86,7 @@ IController* ControllerManager::GetController(const std::string& name)
     return nullptr;
 }
 
-const std::map<std::string, IController*>& ControllerManager::GetControllers() 
+const std::map<string, IController*>& ControllerManager::GetControllers() 
 {
 	return _controllers;
 }

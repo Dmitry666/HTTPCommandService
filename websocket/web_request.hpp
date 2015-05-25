@@ -21,10 +21,8 @@ namespace websocket {
 /// A request received from a client.
 struct request
 {
-    std::string controller;
-    std::string method;
-
-    std::map<std::string, std::string> arguments;
+    std::string command;
+    std::string body;
 };
 
 } // namespace websocket
