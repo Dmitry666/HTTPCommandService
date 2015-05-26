@@ -25,7 +25,9 @@ public:
     template <typename InputIterator>
     std::tuple<result_type, InputIterator> parse(request& req, InputIterator begin, InputIterator end)
     {
-		
+		req.body = "";
+		req.command = "";
+
         while (begin != end)
         {
 			std::string text(begin, end);

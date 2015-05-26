@@ -319,7 +319,6 @@ void connection :: start()
             {
 				HeaderParser<std::array<char, 8192>> parser;
 				bool result = parser.parse( buffer_.cbegin(), buffer_.cbegin() + bytes_transferred);
-
 				if (result)
 				{
 					boost::asio::streambuf request;
@@ -329,13 +328,8 @@ void connection :: start()
 					request_stream << "Connection: Upgrade\r\n";
 					request_stream << "Sec-WebSocket-Accept: " << Acepter::acceptKey(parser["Sec-WebSocket-Key"]) << "\r\n\r\n";
 
-					//! memcpy(_sendData.data(), boost::asio::buffer_cast<const char*>( request.data()), request.size());
-
-					// reply_ = 
-					//do_write();
 					memcpy(buffer_.data(), boost::asio::buffer_cast<const char*>( request.data()), request.size()); 
 
-					auto self(shared_from_this());
 					boost::asio::async_write(socket_,
 						boost::asio::buffer(buffer_, request.size()),
 						[this, self](boost::system::error_code ec, std::size_t)
@@ -343,7 +337,7 @@ void connection :: start()
 							if (!ec)
 							{
 								do_read();
-								// Initiate graceful connection closure.
+
 								//boost::system::error_code ignored_ec;
 								//socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
 							}
@@ -351,21 +345,17 @@ void connection :: start()
 							if (ec != boost::asio::error::operation_aborted)
 							{
 								connection_manager_.stop(self);
-								return;
-							}
-
-							
+							}							
 						});
 				}
 				else
 				{
-					// reply_ = reply::stock_reply(reply::bad_request); TODO> Error.
-                    do_write();
+					connection_manager_.stop(self);
 				}
             }
             else if (ec != boost::asio::error::operation_aborted)
             {
-                connection_manager_.stop(shared_from_this());
+                connection_manager_.stop(self);
             }
         });
 }
@@ -393,11 +383,11 @@ void connection::do_read()
 						{
 							if (error)
 							{
-								// remove.
+								connection_manager_.stop(self);
 								return;
 							}
 
-							BYTE* in_buffer = (BYTE*)buffer_.data();
+							uint8_t* in_buffer = (uint8_t*)buffer_.data();
 							uint16_t size = in_buffer[1] + (in_buffer[0]<<8);
 
 							boost::asio::async_read(socket_,
@@ -416,12 +406,12 @@ void connection::do_read()
 						{
 							if (error)
 							{
-								// remove.
+								connection_manager_.stop(self);
 								return;
 							}
 
 							uint32_t size;
-							memcpy(&size, buffer_.data(), sizeof(UINT));
+							memcpy(&size, buffer_.data(), sizeof(uint32_t));
 
 							boost::asio::async_read(socket_,
 								boost::asio::buffer(buffer_, size + header.mask * 4),
@@ -443,60 +433,57 @@ void connection::do_read()
 				}
                 else
                 {
-					// ????
-                    //do_read();
-					connection_manager_.stop(shared_from_this());
+					connection_manager_.stop(self);
                 }
             }
             else if (ec != boost::asio::error::operation_aborted)
             {
-                connection_manager_.stop(shared_from_this());
+                connection_manager_.stop(self);
             }
         });
 }
 
 void connection::do_write()
 {
-#if 0
-    uint32_t allSize = 0;
-	//for(SendBuffer& buf : _outBuffers)
-	//	allSize += 8 + buf.Writer.GetSize();
+	std::vector<boost::asio::const_buffer> buffers;
+	std::vector<boost::asio::const_buffer> body_buffers = reply_.to_buffers();
 
-	BYTE* data;
-    uint16_t header;
-	if(allSize < 126)
+    uint32_t nb_bytes = 0;
+	for(auto& buf : body_buffers)
+		nb_bytes += boost::asio::buffer_size(buf);
+
+
+	if(nb_bytes < 126)
 	{
-		header = make_header(1, 0x2, 0, allSize);
-        memcpy(_sendData.data(), &header, sizeof(uint16_t));
-        data = _sendData.data() + sizeof(uint16_t);
+		header_.header = make_header(1, 0x1, 0, nb_bytes);
+        nb_bytes += sizeof(uint16_t);
 
-        allSize += sizeof(uint16_t);
+		buffers.push_back(boost::asio::buffer(&header_.header, sizeof(uint16_t)));
 	}
 	else
 	{
-        uint16_t shotSize = allSize;
-		header = make_header(1, 0x2, 0, 126);
-        memcpy(_sendData.data(), &header, sizeof(uint16_t));
+        uint16_t nb_bytes_16 = nb_bytes;
+		header_.header = make_header(1, 0x1, 0, 126);
 
-		BYTE* b = reinterpret_cast<BYTE*>(&shotSize);
+		buffers.push_back(boost::asio::buffer(&header_.header, sizeof(uint16_t)));
+
+		uint8_t* b = reinterpret_cast<uint8_t*>(&nb_bytes_16);
 			
-        memcpy(_sendData.data() + sizeof(uint16_t), &b[1], sizeof(BYTE));
-        memcpy(_sendData.data() + sizeof(uint16_t) + sizeof(BYTE), &b[0], sizeof(BYTE));
-		//memcpy(_sendData.data() + sizeof(USHORT), &b, sizeof(USHORT));
-        data = _sendData.data() + 2 * sizeof(uint16_t);
+		header_.ext[0] = b[1];
+		header_.ext[1] = b[0];
 
-        allSize += 2 * sizeof(uint16_t);
-
+		buffers.push_back(boost::asio::buffer(&header_.ext, sizeof(uint16_t)));
 	}
-#endif
 
+	buffers.insert(buffers.end(), body_buffers.begin(), body_buffers.end());
+	//
+	
     auto self(shared_from_this());
-    boost::asio::async_write(socket_, reply_.to_buffers(),
+    boost::asio::async_write(socket_, buffers,
         [this, self](boost::system::error_code ec, std::size_t)
         {
             if (!ec)
             {
-                // Initiate graceful connection closure.
 				do_read();
                 //boost::system::error_code ignored_ec;
                 //socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
@@ -504,11 +491,8 @@ void connection::do_write()
 
             if (ec != boost::asio::error::operation_aborted)
             {
-                connection_manager_.stop(shared_from_this());
-				return;
-            }
-
-			
+                connection_manager_.stop(self);
+            }	
         });
 }
 
@@ -521,7 +505,7 @@ void connection :: handle_read_data(WebHeader header, const boost::system::error
     {
         bytes -= 4;
 
-        UINT mask = *reinterpret_cast<uint32_t*>(buffer_.data());
+        uint32_t mask = *reinterpret_cast<uint32_t*>(buffer_.data());
         unsigned char* c = (unsigned char*)buffer_.data() + 4;
         for(int i=0; i<bytes; i++)
             c[i] = c[i] ^ ((unsigned char*)(&mask))[i%4];
@@ -593,97 +577,6 @@ void connection :: handle_read_data(WebHeader header, const boost::system::error
         do_read();
     }
 }
-
-#if 0
-void connection :: handle_read_header(const boost::system::error_code& error)
-{
-    if(error)
-    {
-        ErrorStream::write(error.message().c_str());
-        socket_.close();
-        return;
-    }
-
-
-    uint16 command;
-    memcpy(&command, _headerData.data(), sizeof(uint16));
-    WebHeader header = parse_header(command);
-
-    if( header.leght == 126) // Need read size 2 bytes
-    {
-        auto self(shared_from_this());
-        boost::asio::async_read(socket_,
-            boost::asio::buffer(_inData, 2),
-            [this, self, header](boost::system::error_code error, std::size_t bytes_transferred)
-        {
-            if (error)
-            {
-                // remove.
-                return;
-            }
-
-            BYTE* in_buffer = _inData.data();
-            uint16 size = in_buffer[1] + (in_buffer[0]<<8);
-
-            //USHORT size;
-            //memcpy(&size, _inData.data(), sizeof(USHORT));
-
-            boost::asio::async_read(socket_,
-                boost::asio::buffer(_inData, size + header.mask * 4),
-                make_custom_alloc_handler(
-                allocator_,
-                boost::bind(&connection::handle_read_data, shared_from_this(), header, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred)
-                ));
-        }
-        );
-    }
-    else if(header.leght == 127) // Need read size 4 bytes
-    {
-        auto self(shared_from_this());
-        boost::asio::async_read(socket_,
-            boost::asio::buffer(_inData, 4),
-            [this, self, header](boost::system::error_code error, std::size_t bytes_transferred)
-        {
-            if (error)
-            {
-                // remove.
-                return;
-            }
-
-            /*UINT size;
-            memcpy(&size, _inData.data(), sizeof(UINT));
-
-            boost::asio::async_read(socket_,
-                boost::asio::buffer(_inData, size + header.mask * 4),
-                make_custom_alloc_handler(
-                allocator_,
-                boost::bind(&session::handle_read_data, shared_from_this(), header, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred)
-                ));*/
-        }
-        );
-    }
-    else if(header.leght) // Read data.
-    {
-        boost::asio::async_read(socket_,
-            boost::asio::buffer(_inData, header.leght + header.mask * 4),
-            make_custom_alloc_handler(
-            allocator_,
-            boost::bind(&connection::handle_read_data, shared_from_this(), header, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred)
-            ));
-    }
-}
-
-void connection :: handle_write(const boost::system::error_code& error)
-{
-    if (!error)
-    {
-        boost::asio::async_read(socket_, boost::asio::buffer(_headerData, 2),
-            make_custom_alloc_handler(allocator_,
-            boost::bind(&connection::handle_read_header, shared_from_this(), boost::asio::placeholders::error))
-            );
-    }
-}
-#endif
 
 } // namespace websocket
 } // namespace openrc.

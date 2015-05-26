@@ -104,6 +104,11 @@ private:
     /// The reply to be sent back to the client.
     reply reply_;
 
+	struct ws_header
+	{
+		uint16_t header;
+		uint8_t ext[4];
+	} header_;
 #if 0
 private:
     void handle_read_mainheader(const boost::system::error_code& e, std::size_t bytes_transferred);

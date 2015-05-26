@@ -114,12 +114,16 @@ void request_handler::handle_request(const request& req, reply& rep)
 		
     }
 
-
+	rep.body = "[";
 	for(CommandBody& cb : commands)
 	{	
 		vector<string> blocks = split(cb.Command, '.');
 		if(blocks.size() != 2)
 		{
+			rep.body += std::string("{\n") +
+				"\"command\":\"" + cb.Command + "\",\n" +
+				"\"data\":\"Error: Bad command.\"\n"
+				"}";
 			continue;
 		}
 
@@ -130,21 +134,30 @@ void request_handler::handle_request(const request& req, reply& rep)
 		IController* icontroller = ControllerManager::FindController(controllerName);
 		if(icontroller == nullptr)
 		{
-			//handle_request_page(request_path, req, rep);
-			return;
+			rep.body += std::string("{\n") +
+				"\"command\":\"" + cb.Command + "\",\n" +
+				"\"data\":\"Error: Not found controller.\"\n"
+				"}";
+			continue;
 		}
 
 		if( !icontroller->BeginAction() )
 		{
-			//rep = reply::stock_reply(reply::not_found);
-			return;
+			rep.body += std::string("{\n") +
+				"\"command\":\"" + cb.Command + "\",\n" +
+				"\"data\":\"Error: Begin action.\"\n"
+				"}";
+			continue;
 		}
 
 		ControllerMethodRef methodRef = icontroller->FindMethod(method);
 		if( methodRef == nullptr )
 		{
-			//rep = reply::stock_reply(reply::not_found);
-			return;
+			rep.body += std::string("{\n") +
+				"\"command\":\"" + cb.Command + "\",\n" +
+				"\"data\":\"Error: Not found method.\"\n"
+				"}";
+			continue;
 		}
 
 		SessionKey sessionKey;
@@ -164,17 +177,31 @@ void request_handler::handle_request(const request& req, reply& rep)
 
 		if(!validate)
 		{
-			//rep = reply::stock_reply(reply::not_found);
-			return;
+			rep.body += std::string("{\n") +
+				"\"command\":\"" + cb.Command + "\",\n" +
+				"\"data\":\"Error: Bad validation.\"\n"
+				"}";
+
+			icontroller->EndAction();
+			continue;
 		}
 
 		ControllerOutput output;
 		(*methodRef)(icontroller, sessionWeak, argumentsMap, output);
 
-		//rep.content = output.GetBody();
+		rep.body += std::string("{\n") +
+			"\"command\":\"" + cb.Command + "\",\n" +
+			"\"data\":\"" + output.GetBody() + "\"\n"
+			"}";
+
+		if(&cb != &commands.back())
+		{
+			rep.body += ",\n";
+		}
+
 		icontroller->EndAction();
 	}
-	// rep
+	rep.body += "]";
 }
 
 bool request_handler::url_decode(const std::string& in, std::string& out)
