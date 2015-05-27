@@ -17,6 +17,8 @@
 #include <string>
 
 
+
+
 #include "../controller.h"
 #include "../sessionmanager.h"
 
@@ -191,7 +193,7 @@ void request_handler::handle_request(const request& req, reply& rep)
 
 		rep.body += std::string("{\n") +
 			"\"command\":\"" + cb.Command + "\",\n" +
-			"\"data\":\"" + output.GetBody() + "\"\n"
+			"\"data\":\"" + quoted(output.GetBody()) + "\"\n"
 			"}";
 
 		if(&cb != &commands.back())

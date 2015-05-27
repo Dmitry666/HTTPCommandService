@@ -24,4 +24,21 @@ vector<string> split(const string& str, char delimiter)
     return internal;
 }
 
+string quoted(const string& text)
+{
+	string out;
+	//transform(text.begin(), text.end(), out.begin(), [](char c){
+	//	return c == '\"' ? "\\\"" : c;
+	//});
+	for(const char& c : text)
+	{
+		if(c == '\"')
+			out.append("\\\"");
+		else 
+			out.push_back(c);
+	}
+
+	return out;
+}
+
 } // End openrc.

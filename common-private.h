@@ -10,6 +10,7 @@
 namespace openrc {
 
 std::vector<std::string> split(const std::string& str, char delimiter);
+std::string quoted(const std::string& text);
 
 }
 

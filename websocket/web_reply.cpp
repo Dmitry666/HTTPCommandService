@@ -107,7 +107,9 @@ std::vector<boost::asio::const_buffer> reply::to_buffers()
 
 	buffers.push_back(boost::asio::buffer("\"body\":", 7));
 	buffers.push_back(boost::asio::buffer("\"", 1));
-    buffers.push_back(boost::asio::buffer(body, body.size()));
+
+	quotedBody = quoted(body);
+    buffers.push_back(boost::asio::buffer(quotedBody, quotedBody.size()));
 	buffers.push_back(boost::asio::buffer("\"\n", 2));
 
 	buffers.push_back(boost::asio::buffer("}", 1));
