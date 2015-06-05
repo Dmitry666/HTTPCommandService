@@ -26,7 +26,7 @@ public:
     static TModule& RegisterModule( const std::string& moduleName )
     {
         TModule* module = new TModule();
-        ModuleManager& moduleManager = ModuleManager::Instance();
+        ModuleManager& moduleManager = Instance();
         ModuleManager::RegisterModule(moduleName, module);
         return *module;
     }

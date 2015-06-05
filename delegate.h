@@ -51,7 +51,7 @@ public:
     void Call(Types ... args)
     {
         for(IConteiner<Types...>* conteiner : _containers)
-            _containers->Call(args...);
+            conteiner->Call(args...);
     }
 
     Delegate& operator ()(Types ... args)

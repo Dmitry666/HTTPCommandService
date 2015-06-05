@@ -12,7 +12,6 @@
 #include "web_reply.hpp"
 #include "web_request.hpp"
 
-#include <fstream>
 #include <sstream>
 #include <string>
 
@@ -133,10 +132,10 @@ void request_handler::handle_request(const request& req, reply& rep)
 		const string& method = blocks[1];
 		const map<string, string>& argumentsMap = cb.ArgumentsMap;
 
-		IController* icontroller = ControllerManager::FindController(controllerName);
+		auto icontroller = ControllerManager::FindController(controllerName);
 		if(icontroller == nullptr)
 		{
-			rep.body += std::string("{\n") +
+			rep.body += string("{\n") +
 				"\"command\":\"" + cb.Command + "\",\n" +
 				"\"data\":\"Error: Not found controller.\"\n"
 				"}";
@@ -145,7 +144,7 @@ void request_handler::handle_request(const request& req, reply& rep)
 
 		if( !icontroller->BeginAction() )
 		{
-			rep.body += std::string("{\n") +
+			rep.body += string("{\n") +
 				"\"command\":\"" + cb.Command + "\",\n" +
 				"\"data\":\"Error: Begin action.\"\n"
 				"}";
@@ -155,7 +154,7 @@ void request_handler::handle_request(const request& req, reply& rep)
 		ControllerMethodRef methodRef = icontroller->FindMethod(method);
 		if( methodRef == nullptr )
 		{
-			rep.body += std::string("{\n") +
+			rep.body += string("{\n") +
 				"\"command\":\"" + cb.Command + "\",\n" +
 				"\"data\":\"Error: Not found method.\"\n"
 				"}";
@@ -179,7 +178,7 @@ void request_handler::handle_request(const request& req, reply& rep)
 
 		if(!validate)
 		{
-			rep.body += std::string("{\n") +
+			rep.body += string("{\n") +
 				"\"command\":\"" + cb.Command + "\",\n" +
 				"\"data\":\"Error: Bad validation.\"\n"
 				"}";
@@ -191,7 +190,7 @@ void request_handler::handle_request(const request& req, reply& rep)
 		ControllerOutput output;
 		(*methodRef)(icontroller, sessionWeak, argumentsMap, output);
 
-		rep.body += std::string("{\n") +
+		rep.body += string("{\n") +
 			"\"command\":\"" + cb.Command + "\",\n" +
 			"\"data\":\"" + quoted(output.GetBody()) + "\"\n"
 			"}";
@@ -206,18 +205,30 @@ void request_handler::handle_request(const request& req, reply& rep)
 	rep.body += "]";
 }
 
-bool request_handler::url_decode(const std::string& in, std::string& out)
+void request_handler::handle_async_response(const request& req, reply& rep)
+{
+	SessionKey sessionKey;
+	SessionWeak sessionWeak = SessionManager::FindSessionByKey(sessionKey);
+
+	SessionShared session = sessionWeak.lock();
+
+	//
+
+	//
+}
+
+bool request_handler::url_decode(const string& in, string& out)
 {
     out.clear();
     out.reserve(in.size());
-    for (std::size_t i = 0; i < in.size(); ++i)
+    for (size_t i = 0; i < in.size(); ++i)
     {
         if (in[i] == '%')
         {
             if (i + 3 <= in.size())
             {
                 int value = 0;
-                std::istringstream is(in.substr(i + 1, 2));
+                istringstream is(in.substr(i + 1, 2));
                 if (is >> std::hex >> value)
                 {
                     out += static_cast<char>(value);

@@ -74,7 +74,7 @@ string ServiceConfig::MakeKey(const string& section, const string& name)
 
 int ServiceConfig::ValueHandler(void* user, const char* section, const char* name, const char* value)
 {
-    ServiceConfig* reader = (ServiceConfig*)user;
+    ServiceConfig* reader = static_cast<ServiceConfig*>(user);
     string key = MakeKey(section, name);
 
     if (reader->_values[key].size() > 0)

@@ -31,7 +31,8 @@ public:
 
     /// Handle a request and produce a reply.
     void handle_request(const request& req, reply& rep);
-
+	void handle_async_response(const request& req, reply& rep);
+	
 private:
     /// The directory containing the files to be served.
     std::string doc_root_;

@@ -506,9 +506,9 @@ void connection :: handle_read_data(WebHeader header, const boost::system::error
         bytes -= 4;
 
         uint32_t mask = *reinterpret_cast<uint32_t*>(buffer_.data());
-        unsigned char* c = (unsigned char*)buffer_.data() + 4;
+        unsigned char* c = reinterpret_cast<unsigned char*>(buffer_.data()) + 4;
         for(int i=0; i<bytes; i++)
-            c[i] = c[i] ^ ((unsigned char*)(&mask))[i%4];
+            c[i] = c[i] ^ reinterpret_cast<unsigned char*>(&mask)[i%4];
 
         offset += 4;
     }
@@ -541,9 +541,8 @@ void connection :: handle_read_data(WebHeader header, const boost::system::error
     }
 #endif
 
-    uint32_t offsetData = 0;
-
-	int16_t size = header.leght;
+    //uint32_t offsetData = 0;
+	//int16_t size = header.leght;
 		//*reinterpret_cast<int16_t*>(data + offsetData);
     //offsetData += sizeof(int16_t);
 
@@ -559,7 +558,9 @@ void connection :: handle_read_data(WebHeader header, const boost::system::error
 			request_handler_.handle_request(request_, reply_);
 		}
 		else if(request_.command == "update")
-		{}
+		{
+			request_handler_.handle_async_response(request_, reply_);
+		}
 		else
 		{
 			reply_ = reply::stock_reply(reply::bad_request);

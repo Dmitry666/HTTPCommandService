@@ -27,7 +27,6 @@
 
 #include "javascriptmanager.h"
 #include "directoryinfo.h"
-#include <assert.h>
 #include <stdio.h>
 
 #ifdef WITH_JAVASCRIPT
@@ -67,7 +66,7 @@ void JavascriptManager::LogCallback(const FunctionCallbackInfo<Value>& args)
 Handle<String> ReadFile(Isolate* isolate, const string& name) 
 {
 	FILE* file = fopen(name.c_str(), "rb");
-	if (file == NULL) 
+	if (file == nullptr) 
 		return Handle<String>();
 
 	fseek(file, 0, SEEK_END);

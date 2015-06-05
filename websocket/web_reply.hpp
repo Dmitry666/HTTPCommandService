@@ -60,7 +60,7 @@ struct reply
     } status;
 
 	std::string body;
-
+	std::string quotedBody;
     //std::vector<std::string> contents;
 
 	void reset()

@@ -51,6 +51,9 @@ private:
     ArgumentsContainer _argumentMap;
 };
 
+/**
+ * @brief Controller output body.
+ */
 struct ControllerOutput
 {
 	ControllerOutput()
@@ -184,15 +187,16 @@ public:
      * @param contents out content.
      * @return controller method reference.
      */
-    ControllerMethod& operator ()(class IController* obj,
-                                  SessionWeak session,
-                                  const ControllerArguments& arguments,
-                                  ControllerOutput& contents)
+	ControllerMethod& operator ()(class IController* obj,
+		SessionWeak session,
+		const ControllerArguments& arguments,
+		ControllerOutput& contents);
+/*
     {
         this->Execute(obj, session, arguments, contents);
         return (*this);
     }
-
+*/
     //
     const std::string& GetName() const {return _name;}
     const std::string& GetDescription() const {return _description;}
@@ -365,6 +369,13 @@ public:
 
 	bool IsEnable() const { return _enable; }
 
+	void BindCurrentMethod(ControllerMethodRef method);
+	void UnBindCurrentMethod(ControllerMethodRef method);
+
+protected:
+	ControllerMethodRef GetCurrentMethod() const { return _currentMethod; }
+	std::string GetCurrentMethodName() const { return _currentMethod != nullptr ? _currentMethod->GetName() : ""; }
+
 protected:
     std::string _name;
     std::string _description;
@@ -372,6 +383,9 @@ protected:
 
 	//
 	bool _enable;
+
+private:
+	ControllerMethodRef _currentMethod;
 };
 
 /**

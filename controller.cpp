@@ -2,6 +2,7 @@
 #include <algorithm>
 #include "service-config.h"
 #include <iostream>
+#include <assert.h>
 
 using namespace std;
 
@@ -17,6 +18,17 @@ string ToLower(const string& text)
     string textLower = text;
     transform(textLower.begin(), textLower.end(), textLower.begin(), ::tolower);
     return textLower;
+}
+
+ControllerMethod& ControllerMethod::operator ()(class IController* obj,
+                                SessionWeak session,
+                                const ControllerArguments& arguments,
+                                ControllerOutput& contents)
+{
+	obj->BindCurrentMethod(this);
+    this->Execute(obj, session, arguments, contents);
+	obj->UnBindCurrentMethod(this);
+    return (*this);
 }
 
 IController::IController(const string& name, const string& description)
@@ -44,7 +56,17 @@ void IController::RegisterMethod(ControllerMethodRef method)
     _methods.insert(make_pair(ToLower(method->GetName()), method));
 }
 
+void IController::BindCurrentMethod(ControllerMethodRef method)
+{
+	assert(_currentMethod == nullptr);
+	_currentMethod = method;
+}
 
+void IController::UnBindCurrentMethod(ControllerMethodRef method)
+{
+	assert(_currentMethod == method);
+	_currentMethod = nullptr;
+}
 
 //
 map<string, IController*> ControllerManager::_controllers

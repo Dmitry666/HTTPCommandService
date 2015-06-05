@@ -6,8 +6,6 @@
 #include "controller.h"
 
 #include <include/v8.h>
-#include <include/libplatform/libplatform.h>
-#include "js-http-request-processor.h"
 
 namespace openrc {
 

@@ -3,6 +3,7 @@
 #include "fileinfo.h"
 
 #ifdef WITH_JAVASCRIPT
+#include "js-http-request-processor.h"
 
 using namespace v8;
 using namespace std;
@@ -416,7 +417,7 @@ bool JavascriptController::ActionExecute(
 Handle<String> JavascriptController::ReadFile(Isolate* isolate, const string& name) 
 {
 	FILE* file = fopen(name.c_str(), "rb");
-	if (file == NULL) 
+	if (file == nullptr) 
 		return Handle<String>();
 
 	fseek(file, 0, SEEK_END);

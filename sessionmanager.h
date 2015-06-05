@@ -39,8 +39,35 @@ struct SessionId
     }
 };
 
+/**
+ * @brief Network session.
+ */
 class Session
 {
+public:
+	struct AsyncCommand
+	{
+		std::string Controller;
+		std::string Method;
+		std::string Body;
+
+		AsyncCommand()
+		{}
+
+		AsyncCommand(const AsyncCommand& command)
+			: Controller(command.Controller)
+			, Method(command.Method)
+			, Body(command.Body)
+		{}
+
+		AsyncCommand(AsyncCommand&& command)
+		{
+			Controller = std::move(Controller);
+			Method = std::move(Method);
+			Body = std::move(Body);
+		}
+	};
+
 public:
 	Session()
 	{}
@@ -54,7 +81,8 @@ public:
 
 public:
 	SessionId Id;
-
+	std::vector<AsyncCommand> Commands;
+	//struct 
 
 };
 
@@ -72,9 +100,6 @@ public:
 
     static SessionWeak NewSession();
     static SessionWeak FindSessionByKey(const SessionKey& key);
-
-protected:
-
 };
 
 } // End http.
