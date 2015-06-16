@@ -174,10 +174,11 @@ void request_handler::handle_request(const request& req, reply& rep)
 	rep.content = output.GetBody();
 	icontroller->EndAction();
 
+	rep.status = reply::ok;
 #ifdef WITH_COOKIE
-    rep.headers.resize(2 + int32(sessionKey.empty() || sessionKey != session->Id.Key));
+    rep.headers.resize(4 + int32(sessionKey.empty() || sessionKey != session->Id.Key));
 #else
-    rep.headers.resize(2);
+    rep.headers.resize(4);
 #endif
 
     rep.headers[0].name = "Content-Length";
@@ -185,11 +186,17 @@ void request_handler::handle_request(const request& req, reply& rep)
     rep.headers[1].name = "Content-Type";
     //rep.headers[1].value = mime_types::extension_to_type(extension);
 
+	rep.headers[2].name = "Access-Control-Allow-Origin";
+    rep.headers[2].value = "*";
+
+	rep.headers[3].name = "Access-Control-Allow-Headers";
+    rep.headers[3].value = "Origin, X-Requested-With, Content-Type, Accept";
+
 #ifdef WITH_COOKIE
     if(sessionKey.empty() || sessionKey != session->Id.Key)
     {
-        rep.headers[2].name = "Set-Cookie";
-        rep.headers[2].value = "RMID=" + session->Id.Key + ";";
+        rep.headers[4].name = "Set-Cookie";
+        rep.headers[4].value = "RMID=" + session->Id.Key + ";";
     }
 #endif
 }
@@ -220,11 +227,15 @@ void request_handler::handle_request_page(const std::string& request_path, const
 	while (is.read(buf, sizeof(buf)).gcount() > 0)
 		rep.content.append(buf, is.gcount());
 
-	rep.headers.resize(2);
+	rep.headers.resize(4);
 	rep.headers[0].name = "Content-Length";
 	rep.headers[0].value = std::to_string(rep.content.size());
 	rep.headers[1].name = "Content-Type";
 	rep.headers[1].value = mime_types::extension_to_type(extension);
+	rep.headers[2].name = "Access-Control-Allow-Origin";
+    rep.headers[2].value = "*";
+	rep.headers[3].name = "Access-Control-Allow-Headers";
+    rep.headers[3].value = "Origin, X-Requested-With, Content-Type, Accept";
 }
 
 bool request_handler::url_decode(const std::string& in, std::string& out)

@@ -187,7 +187,7 @@ public:
      * @param contents out content.
      * @return controller method reference.
      */
-	ControllerMethod& operator ()(class IController* obj,
+	HCORE_API ControllerMethod& operator ()(class IController* obj,
 		SessionWeak session,
 		const ControllerArguments& arguments,
 		ControllerOutput& contents);

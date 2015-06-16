@@ -14,6 +14,8 @@
 #include <set>
 #include "web_connection.hpp" 
 
+#ifdef WITH_WEBSOCKET
+
 namespace openrc {
 namespace websocket {
 
@@ -44,5 +46,6 @@ private:
 
 } // namespace websocket
 } // namespace openrc.
+#endif
 
 #endif // HTTP_CONNECTION_MANAGER_HPP

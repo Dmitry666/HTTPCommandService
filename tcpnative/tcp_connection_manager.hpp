@@ -14,6 +14,7 @@
 #include <set>
 #include "tcp_connection.hpp" 
 
+#ifdef WITH_TCPNATIVE
 namespace openrc {
 namespace tcpnative {
 
@@ -44,5 +45,6 @@ private:
 
 } // namespace tcpnative
 } // namespace openrc.
+#endif
 
 #endif // HTTP_CONNECTION_MANAGER_HPP

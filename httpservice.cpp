@@ -98,11 +98,13 @@ bool HttpService::Start(const string& address, const string& port)
 	_threads.push_back(thread);
 
 	// WebSocket
+#ifdef WITH_WEBSOCKET
 	auto wsServer = make_shared<websocket::web_server>(_address, "80", _arguments["root"]);
 	_servers.push_back(wsServer);
 
     auto wsThread = make_shared<std::thread>(&RunServer, wsServer);
 	_threads.push_back(wsThread);
+#endif
 
     return true;
 }

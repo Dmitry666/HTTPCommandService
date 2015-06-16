@@ -10,6 +10,8 @@
 
 #include "web_connection_manager.hpp"
 
+#ifdef WITH_WEBSOCKET
+
 namespace openrc {
 namespace websocket {
 
@@ -37,3 +39,4 @@ void connection_manager::stop_all()
 
 } // namespace websocket
 } // namespace openrc.
+#endif

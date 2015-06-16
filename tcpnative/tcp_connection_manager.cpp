@@ -10,6 +10,7 @@
 
 #include "tcp_connection_manager.hpp"
 
+#ifdef WITH_TCPNATIVE
 namespace openrc {
 namespace tcpnative {
 
@@ -37,3 +38,4 @@ void connection_manager::stop_all()
 
 } // namespace tcpnative.
 } // namespace openrc.
+#endif
