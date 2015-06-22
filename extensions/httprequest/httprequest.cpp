@@ -7,6 +7,8 @@
 
 #include <future>
 
+using namespace std;
+
 #ifdef WITH_JAVASCRIPT
 using namespace v8;
 
@@ -23,6 +25,13 @@ XMLHttpRequest::XMLHttpRequest()
 	, _curl(nullptr)
 {
 	_curl = curl_easy_init();
+
+	curl_version_info_data * vinfo = curl_version_info(CURLVERSION_NOW);
+	if (vinfo->features & CURL_VERSION_SSL)
+		// SSL support enabled
+		cout << "SSL Support!" << endl;
+	else
+		cout << "No SSL Support!" << endl;
 }
 #endif
 
@@ -34,6 +43,12 @@ XMLHttpRequest::~XMLHttpRequest()
 void XMLHttpRequest::Open(const std::string& method, const std::string& url, bool bAsync)
 {
 	_bAsync = bAsync;
+
+	if (url.find("https") != string::npos)
+	{	
+		curl_easy_setopt(_curl, CURLOPT_SSL_VERIFYHOST, true);
+		//curl_easy_setopt(_curl, CURLOPT_CAINFO, “c:\Full - PATH - TO\cacert.pem”);
+	}
 
 	curl_easy_setopt(_curl, CURLOPT_ERRORBUFFER, errorBuffer);
 	curl_easy_setopt(_curl, CURLOPT_URL, url.c_str());
