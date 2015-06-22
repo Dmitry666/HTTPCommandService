@@ -1,7 +1,7 @@
 #ifndef HTTP_DIRECTORYINFO_H
 #define HTTP_DIRECTORYINFO_H
 
-#include "FileInfo.h"
+#include "fileinfo.h"
 
 namespace openrc {
 

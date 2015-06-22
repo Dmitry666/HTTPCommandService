@@ -4,6 +4,8 @@
 #include <tuple>
 #include <string>
 
+#include "web_request.hpp"
+
 namespace openrc {
 namespace websocket {
 

@@ -18,4 +18,4 @@ win32 {
 
 SOURCES += main.cpp
 
-LIBS += -lHTTPCommandService
+LIBS += -lHTTPCommandService -ldl

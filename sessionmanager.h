@@ -62,9 +62,9 @@ public:
 
 		AsyncCommand(AsyncCommand&& command)
 		{
-			Controller = std::move(Controller);
-			Method = std::move(Method);
-			Body = std::move(Body);
+            Controller = std::move(command.Controller);
+            Method = std::move(command.Method);
+            Body = std::move(command.Body);
 		}
 	};
 
