@@ -3,8 +3,12 @@
 
 #include <module.h>
 
+#ifdef _WIN32
 #ifndef _Export
 #define _Export __declspec(dllexport)
+#endif
+#else
+#define _Export
 #endif
 
 class DataBaseModule : public openrc::IModule

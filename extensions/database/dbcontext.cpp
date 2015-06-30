@@ -1,5 +1,7 @@
 #include "dbcontext.h"
 
+using namespace std;
+
 #ifdef WITH_JAVASCRIPT
 #include <v8pp/class.hpp>
 #include <v8pp/module.hpp>
@@ -123,3 +125,20 @@ void DBContext::Register(Isolate* isolate)
 #endif
 }
 #endif
+
+
+DBContext& DBContext::Instance(const string& name)
+{
+    static std::map<string, DBContext*> contexts;
+    auto it = contexts.find(name);
+    if(it != contexts.end())
+    {
+        DBContext* context = new DBContext();
+        contexts.insert(std::make_pair(name, context));
+        return *context;
+        //context->SetAddress("176.120.25.177");
+        //context->SetDBName("instagram_tokens");
+    }
+
+    return *it->second;
+}

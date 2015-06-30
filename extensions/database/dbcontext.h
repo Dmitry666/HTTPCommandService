@@ -62,6 +62,8 @@ public:
 	static void Register(v8::Isolate* isolate);
 #endif
 
+    static DBContext& Instance(const std::string& name = "default");
+
 protected:
 	std::string _type;
 	std::string _address;
