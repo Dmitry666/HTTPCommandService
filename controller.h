@@ -191,12 +191,7 @@ public:
 		SessionWeak session,
 		const ControllerArguments& arguments,
 		ControllerOutput& contents);
-/*
-    {
-        this->Execute(obj, session, arguments, contents);
-        return (*this);
-    }
-*/
+
     //
     const std::string& GetName() const {return _name;}
     const std::string& GetDescription() const {return _description;}
@@ -399,6 +394,11 @@ public:
      * @param controller controller pointer.
      */
     HCORE_API static void RegisterController(IController* controller);
+
+    /**
+     * @brief Construct all controllers.
+     */
+    HCORE_API static void ConstructControllers();
 
     /**
      * @brief Find controller by name.

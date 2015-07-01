@@ -14,6 +14,7 @@ DBContext::DBContext( const v8::FunctionCallbackInfo<v8::Value>& args )
 }
 #else
 DBContext::DBContext( )
+    : _type("postgresql")
 {}
 #endif
 
@@ -27,7 +28,7 @@ bool DBContext::Open()
 	{
 		if(_type == "postgresql")
 		{
-			connectLine = "dbname=" + _dbName + " user=" + _user + " password=" + _password;
+            connectLine = "host=" + _address + " dbname=" + _dbName + " user=" + _user + " password=" + _password;
 			_sql.open(soci::postgresql, connectLine.c_str());
 		}
 #if 0
@@ -69,16 +70,8 @@ bool DBContext::Close()
 
 soci::rowset<soci::row> DBContext::Query(const std::string& text)
 {
-	try
-	{
-		soci::rowset<soci::row> rowset = _sql.prepare << text;
-		return rowset;
-	}
-	catch (std::exception &e)
-	{
-		throw;
-	}
-
+    soci::rowset<soci::row> rowset = _sql.prepare << text;
+    return rowset;
 	//return soci::rowset<soci::row>();
 }
 
@@ -131,7 +124,7 @@ DBContext& DBContext::Instance(const string& name)
 {
     static std::map<string, DBContext*> contexts;
     auto it = contexts.find(name);
-    if(it != contexts.end())
+    if(it == contexts.end())
     {
         DBContext* context = new DBContext();
         contexts.insert(std::make_pair(name, context));

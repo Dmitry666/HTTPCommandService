@@ -77,11 +77,22 @@ __attribute__ ((init_priority (101)))
 
 void ControllerManager::RegisterController(IController* controller)
 {
-	controller->Construct();
+    //controller->Construct();
     _controllers.insert(make_pair(ToLower(controller->ClassName()), controller));
     //controller->RegisterMethods();
 
 	cout << "Register Controller: " << controller->ClassName() << endl;
+}
+
+void ControllerManager::ConstructControllers()
+{
+    for(auto& pair : _controllers)
+    {
+        IController* controller = pair.second;
+        controller->Construct();
+    }
+
+    cout << "Contruct controllers." << endl;
 }
 
 IController* ControllerManager::FindController(const string& name)

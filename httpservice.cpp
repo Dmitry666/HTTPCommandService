@@ -29,6 +29,7 @@
 #include "tcpnative/tcp_server.hpp"
 #endif
 
+#include "controller.h"
 #include "modulemanager.h"
 #include "javascriptmanager.h"
 
@@ -61,6 +62,7 @@ void RunServer(shared_ptr<base_server> _s)
 HttpService::HttpService(const HttpServiceArguments& arguments)
 	: _arguments(arguments)
 {
+    ControllerManager::ConstructControllers();
     ModuleManager::Instance().LoadModulesFromFolder("./");
 
 	const std::string rootDir = _arguments["root"];

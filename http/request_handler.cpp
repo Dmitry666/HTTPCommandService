@@ -51,6 +51,7 @@ void request_handler::handle_request(const request& req, reply& rep)
     SessionKey sessionKey;
     for(const header& h : req.headers)
     {
+
         if(h.name == "Cookie")
         {
             const vector<string> blocks = split(h.value, ';');
@@ -62,6 +63,10 @@ void request_handler::handle_request(const request& req, reply& rep)
                     sessionKey = pair[1];
                 }
             }
+        }
+        else if(h.name == "RMID")
+        {
+            sessionKey = h.value;
         }
     }
     // Decode url to path.
@@ -176,7 +181,7 @@ void request_handler::handle_request(const request& req, reply& rep)
 
 	rep.status = reply::ok;
 #ifdef WITH_COOKIE
-    rep.headers.resize(4 + int32(sessionKey.empty() || sessionKey != session->Id.Key));
+    rep.headers.resize(4 + 3 * int32(sessionKey.empty() || sessionKey != session->Id.Key));
 #else
     rep.headers.resize(4);
 #endif
@@ -197,6 +202,12 @@ void request_handler::handle_request(const request& req, reply& rep)
     {
         rep.headers[4].name = "Set-Cookie";
         rep.headers[4].value = "RMID=" + session->Id.Key + ";";
+
+        rep.headers[5].name = "Access-Control-Expose-Headers";
+        rep.headers[5].value = "Set-Cookie";
+
+        rep.headers[6].name = "RMID";
+        rep.headers[6].value = session->Id.Key;
     }
 #endif
 }
