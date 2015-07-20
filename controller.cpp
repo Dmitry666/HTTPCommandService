@@ -35,6 +35,7 @@ IController::IController(const string& name, const string& description)
     : _name(name)
     , _description(description)
 	, _enable(true)
+	, _currentMethod(nullptr)
 {
 	_enable = ServiceConfig::Instance().GetBoolean(_name, "enable", true);
 }
