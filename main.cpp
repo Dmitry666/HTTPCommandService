@@ -20,6 +20,7 @@ int main(int argc, char* argv[])
         _port = argv[2];
 
 		arguments.Push("root", argv[3]);
+		
         //std::cerr << "Usage: http_server <address> <port> <doc_root>\n";
         //std::cerr << "  For IPv4, try:\n";
         //std::cerr << "    receiver 0.0.0.0 80 .\n";
@@ -29,6 +30,7 @@ int main(int argc, char* argv[])
         //return 1;
     }
 
+	arguments.Push("thread_pool_size", "4");
     HttpService service(arguments);
 
 	cout << "Start HTTP Service: " << _address << ":" << _port << ", " << _root << endl;

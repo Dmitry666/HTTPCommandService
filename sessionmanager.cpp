@@ -25,9 +25,12 @@ namespace openrc {
 
 std::map<SessionKey, SessionShared> _sessions;
 int32 _lastSessionId = -1;
+std::mutex _mutex;
 
 SessionWeak SessionManager::NewSession()
 {
+	std::lock_guard<std::mutex> lock(_mutex);
+
     SessionId sessionId;
     sessionId.Id = ++_lastSessionId;
 
@@ -42,11 +45,15 @@ SessionWeak SessionManager::NewSession()
 
 SessionWeak SessionManager::FindSessionByKey(const SessionKey& key)
 {
-    auto it = _sessions.find(key);
-    if(it != _sessions.end())
-    {
-        return it->second;
-    }
+	{
+		std::lock_guard<std::mutex> lock(_mutex);
+
+		auto it = _sessions.find(key);
+		if(it != _sessions.end())
+		{
+			return it->second;
+		}
+	}
 
     return NewSession();
 }
