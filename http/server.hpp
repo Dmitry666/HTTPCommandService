@@ -51,7 +51,7 @@ public:
     /// Construct the server to listen on the specified TCP address and port, and
     /// serve up files from the given directory.
     explicit server(const std::string& address, const std::string& port,
-      const std::string& doc_root);
+		const std::string& doc_root, std::size_t thread_pool_size);
 
     /// Run the server's io_service loop.
     virtual void run() override;
@@ -66,6 +66,9 @@ private:
     void do_await_stop();
 
 private:
+	/// The number of threads that will call io_service::run().
+	std::size_t thread_pool_size_;
+
     /// The io_service used to perform asynchronous operations.
     boost::asio::io_service io_service_;
 

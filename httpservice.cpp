@@ -93,7 +93,8 @@ bool HttpService::Start(const string& address, const string& port)
 	_port = port;
 
 	// Jttp.
-	auto httpServer = make_shared<http::server::server>(_address, _port, _arguments["root"]);
+	std::size_t thread_pool_size = _arguments["thread_pool_size"].empty() ? 1 : stoi(_arguments["thread_pool_size"]);
+	auto httpServer = make_shared<http::server::server>(_address, _port, _arguments["root"], thread_pool_size);
 	_servers.push_back(httpServer);
 
     auto thread = make_shared<std::thread>(&RunServer, httpServer);

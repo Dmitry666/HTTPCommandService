@@ -12,13 +12,20 @@
 #include <signal.h>
 #include <utility>
 
+#include <boost/thread/thread.hpp>
+#include <boost/bind.hpp>
+#include <boost/shared_ptr.hpp>
+#include <thread>
+//#include <functional>
+
 namespace openrc {
 namespace http {
 namespace server {
 
 server::server(const std::string& address, const std::string& port,
-    const std::string& doc_root)
-    : io_service_()
+	const std::string& doc_root, std::size_t thread_pool_size)
+	: thread_pool_size_(thread_pool_size)
+	, io_service_()
     , signals_(io_service_)
     , acceptor_(io_service_)
     , connection_manager_()
@@ -49,11 +56,24 @@ server::server(const std::string& address, const std::string& port,
 
 void server::run()
 {
+	// Create a pool of threads to run all of the io_services.
+	std::vector<std::shared_ptr<std::thread>> threads;
+	for (std::size_t i = 0; i < thread_pool_size_; ++i)
+	{
+		std::shared_ptr<std::thread> thread(new std::thread(
+			boost::bind(&boost::asio::io_service::run, &io_service_)));
+		threads.push_back(thread);
+	}
+
+	// Wait for all threads in the pool to exit.
+	for (std::size_t i = 0; i < threads.size(); ++i)
+		threads[i]->join();
+
     // The io_service::run() call will block until all asynchronous operations
     // have finished. While the server is running, there is always at least one
     // asynchronous operation outstanding: the asynchronous accept call waiting
     // for new incoming connections.
-    io_service_.run();
+    //io_service_.run();
 }
 
 void server::stop()
