@@ -17,6 +17,8 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
+#include <mutex>
+
 #ifndef _MSC_VER
 #pragma GCC diagnostic pop
 #endif

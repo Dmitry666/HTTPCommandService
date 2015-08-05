@@ -4,6 +4,8 @@
 #include <json/writer.h>
 #endif
 
+#include "serverstats.h"
+
 using namespace std;
 
 namespace openrc {
@@ -23,15 +25,7 @@ bool HelpController::Validate(SessionWeak session, const ControllerArguments& ar
     return true;
 }
 
-CONTROLLER_ACTIONVALIDATEIMPL(HelpController, ShowControllers, "ShowControllers", "Print all controller with their actions.")
-bool HelpController::ShowControllersValidate(SessionWeak session, const ControllerArguments& arguments)
-{
-    UNUSED(session)
-    UNUSED(arguments)
-
-    return true;
-}
-
+CONTROLLER_ACTIONIMPL(HelpController, ShowControllers, "ShowControllers", "Print all controller with their actions.")
 void HelpController::ShowControllers(SessionWeak session, const ControllerArguments& arguments, ControllerOutput& outContent)
 {
     enum OutputFormat
@@ -167,6 +161,30 @@ void HelpController::ShowControllersXML(SessionWeak session, const ControllerArg
 #else
     outContent.append("Format xml don't sapport\n");
 #endif
+}
+
+//
+CONTROLLER_ACTIONIMPL(HelpController, Stats, "Stats", "Print server statistic.")
+void HelpController::Stats(SessionWeak session, const ControllerArguments& arguments, ControllerOutput& outContent)
+{
+    UNUSED(session)
+    UNUSED(arguments)
+
+    Json::Value resultValue;
+
+    ServerStats& serverStats = ServerStats::Instance();
+
+    resultValue["requests"]["number"] = int32(serverStats.GetNbRequest());
+    resultValue["requests"]["nps"] = serverStats.GetRequestPerSecond();
+    resultValue["requests"]["bytes"] = int32(serverStats.GetNbRequestBytes());
+    resultValue["requests"]["bps"] = serverStats.GetRequestBytesPerSecond();
+
+    resultValue["response"]["number"] = int32(serverStats.GetNbResponse());
+    resultValue["response"]["nps"] = serverStats.GetResponsePerSecond();
+    resultValue["response"]["bytes"] = int32(serverStats.GetNbResponseBytes());
+    resultValue["response"]["bps"] = serverStats.GetResponseBytesPerSecond();
+
+    outContent.append(resultValue.toStyledString());
 }
 
 } // End http.

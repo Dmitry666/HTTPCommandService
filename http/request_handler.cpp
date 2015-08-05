@@ -174,7 +174,15 @@ void request_handler::handle_request(const request& req, reply& rep)
 	}
 
 	ControllerOutput output;
-	(*methodRef)(icontroller, sessionWeak, argumentsMap, output);
+
+    try
+    {
+        (*methodRef)(icontroller, sessionWeak, argumentsMap, output);
+    }
+    catch(std::exception e)
+    {
+        std::cout << "Call controller methods exception: " << e.what() << std::endl;
+    }
 
 	rep.content = output.GetBody();
 	icontroller->EndAction();

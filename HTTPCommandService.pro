@@ -172,7 +172,8 @@ HEADERS += \
     http/request_parser.hpp \
     http/server.hpp \
     http/sslconnection.hpp \
-    http/sslserver.hpp
+    http/sslserver.hpp \
+    serverstats.h
 
 SOURCES += \
     common-private.cpp \
@@ -209,7 +210,8 @@ SOURCES += \
     http/request_parser.cpp \
     http/server.cpp \
     http/sslconnection.cpp \
-    http/sslserver.cpp
+    http/sslserver.cpp \
+    serverstats.cpp
 
 
 win32 {

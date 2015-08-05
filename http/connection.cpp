@@ -13,6 +13,8 @@
 #include "connection_manager.hpp"
 #include "request_handler.hpp"
 
+#include "../serverstats.h"
+
 namespace openrc {
 namespace http {
 namespace server {
@@ -42,6 +44,8 @@ void connection::do_read()
         {
             if (!ec)
             {
+                ServerStats::Instance().NewRequest(bytes_transferred);
+
                 request_parser::result_type result;
                 std::tie(result, std::ignore) = request_parser_.parse(
                     request_, buffer_.data(), buffer_.data() + bytes_transferred);
@@ -72,10 +76,12 @@ void connection::do_write()
 {
     auto self(shared_from_this());
     boost::asio::async_write(socket_, reply_.to_buffers(),
-        [this, self](boost::system::error_code ec, std::size_t)
+        [this, self](boost::system::error_code ec, std::size_t bytes_transferred)
         {
             if (!ec)
             {
+                ServerStats::Instance().NewResponse(bytes_transferred);
+
                 // Initiate graceful connection closure.
                 boost::system::error_code ignored_ec;
                 socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);

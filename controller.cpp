@@ -59,14 +59,14 @@ void IController::RegisterMethod(ControllerMethodRef method)
 
 void IController::BindCurrentMethod(ControllerMethodRef method)
 {
-	assert(_currentMethod == nullptr);
-	_currentMethod = method;
+    //assert(_currentMethod == nullptr);
+    //_currentMethod = method;
 }
 
 void IController::UnBindCurrentMethod(ControllerMethodRef method)
 {
-	assert(_currentMethod == method);
-	_currentMethod = nullptr;
+    //assert(_currentMethod == method);
+    //_currentMethod = nullptr;
 }
 
 //
@@ -82,7 +82,7 @@ void ControllerManager::RegisterController(IController* controller)
     _controllers.insert(make_pair(ToLower(controller->ClassName()), controller));
     //controller->RegisterMethods();
 
-	cout << "Register Controller: " << controller->ClassName() << endl;
+    cout << "Register ControlGetCurrentMethodler: " << controller->ClassName() << endl;
 }
 
 void ControllerManager::ConstructControllers()

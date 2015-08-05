@@ -12,6 +12,8 @@
 #define HTTP_CONNECTION_MANAGER_HPP
 
 #include <set>
+#include <mutex>
+
 #include "connection.hpp"
 
 namespace openrc {
@@ -41,6 +43,7 @@ public:
 private:
     /// The managed connections.
     std::set<connection_ptr> connections_;
+    std::mutex mutex_;
 };
 
 } // namespace server

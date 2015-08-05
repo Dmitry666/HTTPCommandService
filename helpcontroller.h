@@ -14,7 +14,8 @@ class HelpController : public IController
     CONTROLLERVALIDATE_REGISTER(HelpController, "Help", "Help information.")
 
 public:
-    CONTROLLER_ACTIONVALIDATE(HelpController, ShowControllers)
+    CONTROLLER_ACTION(HelpController, ShowControllers)
+    CONTROLLER_ACTION(HelpController, Stats)
 
 private:
     void ShowControllersText(SessionWeak session, const ControllerArguments& arguments, ControllerOutput& content);
