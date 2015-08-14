@@ -170,6 +170,7 @@ void HelpController::Stats(SessionWeak session, const ControllerArguments& argum
     UNUSED(session)
     UNUSED(arguments)
 
+#ifdef WITH_JSONCPP
     Json::Value resultValue;
 
     ServerStats& serverStats = ServerStats::Instance();
@@ -185,6 +186,9 @@ void HelpController::Stats(SessionWeak session, const ControllerArguments& argum
     resultValue["response"]["bps"] = serverStats.GetResponseBytesPerSecond();
 
     outContent.append(resultValue.toStyledString());
+#else
+	outContent.append("Format json don't sapport\n");
+#endif
 }
 
 } // End http.

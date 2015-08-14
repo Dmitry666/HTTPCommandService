@@ -109,6 +109,7 @@
     <ClInclude Include="..\module.h" />
     <ClInclude Include="..\modulemanager.h" />
     <ClInclude Include="..\server.h" />
+    <ClInclude Include="..\serverstats.h" />
     <ClInclude Include="..\service-config.h" />
     <ClInclude Include="..\sessionmanager.h" />
     <ClInclude Include="..\tcpnative\tcp_connection.hpp" />
@@ -147,6 +148,7 @@
     <ClCompile Include="..\javascriptmanager.cpp" />
     <ClCompile Include="..\js-http-request-processor.cpp" />
     <ClCompile Include="..\modulemanager.cpp" />
+    <ClCompile Include="..\serverstats.cpp" />
     <ClCompile Include="..\service-config.cpp" />
     <ClCompile Include="..\sessionmanager.cpp" />
     <ClCompile Include="..\tcpnative\tcp_connection.cpp" />
