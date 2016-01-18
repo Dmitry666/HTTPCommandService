@@ -3,6 +3,8 @@
 
 #include "common.h"
 #include <memory>
+#include <mutex>
+
 namespace openrc {
 
 //typedef std::string ControllerOutput;

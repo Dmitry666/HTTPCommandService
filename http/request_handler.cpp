@@ -209,7 +209,7 @@ void request_handler::handle_request(const request& req, reply& rep)
     if(sessionKey.empty() || sessionKey != session->Id.Key)
     {
         rep.headers[4].name = "Set-Cookie";
-        rep.headers[4].value = "RMID=" + session->Id.Key + ";";
+		rep.headers[4].value = "RMID=" + session->Id.Key + ";" + "path=/;";
 
         rep.headers[5].name = "Access-Control-Expose-Headers";
         rep.headers[5].value = "Set-Cookie";
