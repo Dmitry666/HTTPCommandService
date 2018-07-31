@@ -20,6 +20,7 @@ DEFINES += \
 DEFINES += CRT_SECURE_NO_WARNINGS
 
 CONFIG += c++11
+CONFIG += unversioned_soname unversioned_libname
 
 win32 {
 
@@ -67,6 +68,7 @@ unix {
     QMAKE_CXXFLAGS = -fPIC
     INCLUDEPATH += ./
 
+    QMAKE_LFLAGS += -Wl,--no-undefined
     INCLUDEPATH += /usr/include/jsoncpp
     INCLUDEPATH += /usr/include/inih
 }
