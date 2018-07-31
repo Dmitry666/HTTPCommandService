@@ -33,6 +33,8 @@
 #include "modulemanager.h"
 #include "javascriptmanager.h"
 
+#include <iostream>
+
 //using namespace openrc::http;
 using namespace std;
 

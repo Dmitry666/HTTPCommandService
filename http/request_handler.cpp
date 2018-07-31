@@ -20,6 +20,8 @@
 #include "../controller.h"
 #include "../sessionmanager.h"
 
+#include <iostream>
+
 using namespace std;
 
 namespace openrc {
