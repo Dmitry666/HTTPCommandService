@@ -1,0 +1,8 @@
+[requires]
+boost/1.76.0
+jsoncpp/1.9.4
+inih/52
+
+[generators]
+cmake
+
