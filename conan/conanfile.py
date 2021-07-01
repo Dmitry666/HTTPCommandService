@@ -11,8 +11,7 @@ class HelloConan(ConanFile):
 
     def source(self):
         git = tools.Git(folder="HTTPCommandService")
-        #git.clone("https://github.com/Dmitry666/HTTPCommandService.git")
-        git.clone("https://github.com/microneo/HTTPCommandService.git", "ConanIntegration")
+        git.clone("https://github.com/Dmitry666/HTTPCommandService.git", "master")
         tools.replace_in_file("HTTPCommandService/CMakeLists.txt", "include(conan/conanbuildinfo.cmake)", "include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)")
     
     def build_requirements(self):
