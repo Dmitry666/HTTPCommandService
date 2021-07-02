@@ -10,12 +10,7 @@
 #include <cstdlib>
 
 #include "service-config.h"
-
-#ifdef _WIN32
-#include <inih/ini.h>
-#else
 #include <ini.h>
-#endif
 
 using namespace std;
 
